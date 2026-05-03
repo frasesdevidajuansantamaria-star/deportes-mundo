@@ -252,6 +252,20 @@ img { max-width: 100%; display: block; }
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: .5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-date {
+  font-size: .7rem;
+  color: #555;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ── Badges ── */
@@ -1608,7 +1622,7 @@ img { max-width: 100%; display: block; }
 .badge-money { background: #1a1500; color: #c8a415; border: 1px solid #c8a415; }
 .liga-news-title   { font-size: .88rem; font-weight: 700; color: var(--text); line-height: 1.45; }
 .liga-news-summary { font-size: .75rem; color: var(--text-muted); line-height: 1.5; }
-.liga-news-meta    { font-size: .68rem; color: #444; font-weight: 600; margin-top: auto; }
+.liga-news-meta    { font-size: .68rem; color: #444; font-weight: 600; margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 
 .liga-empty {
   display: flex;

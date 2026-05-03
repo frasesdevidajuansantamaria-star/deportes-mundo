@@ -73,6 +73,7 @@
         {% if a.summary %}<p class="liga-news-summary">{{ a.summary }}</p>{% endif %}
         <div class="liga-news-meta">
           <span>{{ a.source }}</span>
+          {% if a.published_fmt %}<span class="card-date">{{ a.published_fmt }}</span>{% endif %}
         </div>
       </div>
     </a>

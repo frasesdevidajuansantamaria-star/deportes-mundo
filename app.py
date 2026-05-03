@@ -46,12 +46,14 @@ def _fetch_feed(url):
                 source = getattr(e.source, 'title', '')
             if not source:
                 source = url.split('/')[2].replace('www.', '').replace('news.google.com', 'Google News')
+            raw_date = e.get('published', '')
             entries.append({
                 'title': e.get('title', '').strip(),
                 'summary': _clean(e.get('summary', '')),
                 'link': e.get('link', '#'),
                 'source': source,
-                'published': e.get('published', ''),
+                'published': raw_date,
+                'published_fmt': _format_date(raw_date),
                 'image': _extract_image(e),
             })
         with _cache_lock:
@@ -59,6 +61,41 @@ def _fetch_feed(url):
         return entries
     except Exception:
         return []
+
+
+def _format_date(raw):
+    if not raw:
+        return ''
+    import datetime
+    dt = None
+    try:
+        from email.utils import parsedate_to_datetime
+        dt = parsedate_to_datetime(raw)
+    except Exception:
+        pass
+    if dt is None:
+        try:
+            raw2 = raw.replace('Z', '+00:00')
+            dt = datetime.datetime.fromisoformat(raw2)
+        except Exception:
+            return ''
+    try:
+        now = datetime.datetime.now(datetime.timezone.utc)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=datetime.timezone.utc)
+        diff = now - dt
+        mins = int(diff.total_seconds() / 60)
+        if mins < 60:
+            return f'hace {mins}min' if mins > 1 else 'ahora'
+        hours = mins // 60
+        if hours < 24:
+            return f'hace {hours}h'
+        if hours < 48:
+            return 'ayer'
+        meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
+        return f'{dt.day} {meses[dt.month - 1]}'
+    except Exception:
+        return ''
 
 
 def _clean(text):

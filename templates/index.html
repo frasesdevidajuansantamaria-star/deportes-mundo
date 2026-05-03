@@ -30,7 +30,7 @@
       {% if a.score >= 3 %}<span class="badge badge-fire">🔥 TRENDING</span>{% endif %}
       <h3>{{ a.title }}</h3>
       {% if a.summary %}<p class="card-summary">{{ a.summary }}</p>{% endif %}
-      <span class="card-source">{{ a.source }}</span>
+      <span class="card-source">{{ a.source }}{% if a.published_fmt %}<span class="card-date">· {{ a.published_fmt }}</span>{% endif %}</span>
     </a>
     {% endfor %}
   </div>
@@ -50,7 +50,7 @@
       <span class="badge badge-money">💰 MONETIZABLE</span>
       <h3>{{ a.title }}</h3>
       {% if a.summary %}<p class="card-summary">{{ a.summary }}</p>{% endif %}
-      <span class="card-source">{{ a.source }}</span>
+      <span class="card-source">{{ a.source }}{% if a.published_fmt %}<span class="card-date">· {{ a.published_fmt }}</span>{% endif %}</span>
     </a>
     {% endfor %}
   </div>
@@ -66,7 +66,7 @@
     <a href="{{ a.link }}" target="_blank" rel="noopener" class="card card-small">
       <span class="badge" style="background: {{ a.sport_color }}">{{ a.sport_emoji }} {{ a.sport_name }}</span>
       <h4>{{ a.title }}</h4>
-      <span class="card-source">{{ a.source }}</span>
+      <span class="card-source">{{ a.source }}{% if a.published_fmt %}<span class="card-date">· {{ a.published_fmt }}</span>{% endif %}</span>
     </a>
     {% endfor %}
   </div>
