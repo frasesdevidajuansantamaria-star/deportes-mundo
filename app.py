@@ -52,6 +52,13 @@ def _extract_image(e):
         for enc in e.enclosures:
             if enc.get('type', '').startswith('image') and enc.get('href'):
                 return enc['href']
+    # Buscar en el summary como HTML (regex para <img src="...")
+    import re
+    summary = e.get('summary', '')
+    if summary:
+        match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', summary)
+        if match:
+            return match.group(1)
     return ''
 
 
