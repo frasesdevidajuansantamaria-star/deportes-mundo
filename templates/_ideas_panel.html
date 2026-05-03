@@ -1,10 +1,23 @@
+{% if deporte != 'todos' %}
+<!-- HEADER CON DEPORTE SELECCIONADO -->
+<div class="ideas-panel-header">
+  <div>
+    <h3>{{ sport_cfg.emoji or '💡' }} Ideas de {{ sport_cfg.name or deporte | capitalize }} Hoy</h3>
+    <span class="ideas-fecha">📅 {{ fecha }} · Todas las ligas del mundo</span>
+  </div>
+</div>
+<button class="ideas-back-btn" onclick="mostrarSelector()">← Cambiar deporte</button>
+{% else %}
 <div class="ideas-panel-header">
   <div>
     <h3>💡 Ideas para YouTube Hoy</h3>
-    <span class="ideas-fecha">📅 {{ fecha }} · Actualizado con noticias de hoy</span>
+    <span class="ideas-fecha">📅 {{ fecha }} · Todas las ligas del mundo</span>
   </div>
 </div>
-<p class="ideas-panel-sub">Titulares optimizados para máximo CTR — haz clic para ir a la noticia original</p>
+{% endif %}
+
+<p class="ideas-panel-sub">Haz clic en un título para leer la noticia · Cópialo para tu canal</p>
+
 <div class="ideas-panel-list">
   {% for idea in ideas %}
   <a href="{{ idea.link }}" target="_blank" rel="noopener" class="idea-panel-item {% if idea.score >= 3 %}idea-fire{% elif idea.score >= 2 %}idea-money{% endif %}">
@@ -14,15 +27,13 @@
       <span class="idea-panel-tag idea-tag-{{ idea.tag | lower }}">{{ idea.tag }}</span>
     </div>
     <p class="idea-panel-titulo">{{ idea.titulo }}</p>
-    {% if idea.score >= 3 %}
-    <span class="idea-panel-tip">🔥 Alta probabilidad de trending</span>
-    {% elif idea.score >= 2 %}
-    <span class="idea-panel-tip">💰 Potencial monetizable</span>
-    {% endif %}
+    {% if idea.score >= 3 %}<span class="idea-panel-tip">🔥 Alta probabilidad de trending</span>
+    {% elif idea.score >= 2 %}<span class="idea-panel-tip">💰 Potencial monetizable</span>{% endif %}
   </a>
   {% endfor %}
 </div>
+
 <div class="ideas-panel-footer">
-  <p>💡 Estas ideas vienen de las noticias más relevantes del momento</p>
-  <a href="/buscar" class="ideas-footer-link">🔍 Buscar más noticias →</a>
+  <p>{{ ideas|length }} ideas de noticias reales de hoy</p>
+  <a href="/buscar" class="ideas-footer-link" onclick="closeIdeasPanel()">🔍 Buscar más noticias →</a>
 </div>

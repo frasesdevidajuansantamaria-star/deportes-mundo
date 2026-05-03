@@ -533,7 +533,7 @@ img { max-width: 100%; display: block; }
 }
 .ideas-overlay.open { display: block; }
 
-/* ── Panel lateral ── */
+/* ── Panel lateral (desktop) ── */
 .ideas-panel {
   position: fixed;
   top: 0;
@@ -551,72 +551,139 @@ img { max-width: 100%; display: block; }
 }
 .ideas-panel.open { right: 0; }
 
+/* ── Topbar con botón cerrar ── */
+.ideas-panel-topbar {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #0a0a0a;
+  border-bottom: 1px solid #1a1a1a;
+  flex-shrink: 0;
+}
 .ideas-close {
-  position: absolute;
-  top: 14px; left: 14px;
   background: var(--bg3);
   border: 1px solid var(--border);
   color: var(--text);
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 6px;
-  font-size: .8rem;
+  font-size: .82rem;
   font-weight: 700;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  z-index: 10;
 }
-.ideas-close:hover { background: var(--accent); border-color: var(--accent); }
+.ideas-close:hover { background: #e31837; border-color: #e31837; color: #fff; }
 
 .ideas-panel-body {
   overflow-y: auto;
   flex: 1;
-  padding: 60px 0 20px;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* ── Header del panel ── */
-.ideas-panel-header {
+/* ── Selector de deportes ── */
+.ideas-selector-wrap { padding: 20px 16px; }
+.ideas-selector-header { text-align: center; margin-bottom: 24px; padding: 16px 0; border-bottom: 2px solid #ff0000; }
+.ideas-selector-header h3 { font-size: 1.2rem; font-weight: 900; color: #fff; margin-bottom: 6px; }
+.ideas-selector-header p  { font-size: .88rem; color: #888; }
+
+.ideas-deportes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ideas-deporte-btn {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 20px 20px 8px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 12px;
+  background: #151515;
+  border: 2px solid #222;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all .2s;
+}
+.ideas-deporte-btn:hover {
+  border-color: var(--dc, #e31837);
+  background: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
+.ideas-deporte-emoji { font-size: 2.2rem; }
+.ideas-deporte-name  { font-size: .95rem; font-weight: 800; color: #fff; }
+.ideas-deporte-hint  { font-size: .68rem; color: #555; font-weight: 600; }
+
+.ideas-todos-btn {
+  width: 100%;
+  padding: 14px;
+  background: #1a1a1a;
+  border: 1px dashed #333;
+  border-radius: 10px;
+  color: #888;
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all .2s;
+}
+.ideas-todos-btn:hover { border-color: #c8a415; color: #c8a415; }
+
+/* ── Header del panel (cuando ya cargaron ideas) ── */
+.ideas-panel-header {
+  padding: 16px 16px 8px;
   border-bottom: 2px solid #ff0000;
   background: linear-gradient(135deg, #1a0000, #0d0d0d);
 }
-.ideas-panel-header h3 {
-  font-size: 1.15rem;
-  font-weight: 900;
-  color: #fff;
-  margin-bottom: 4px;
+.ideas-panel-header h3 { font-size: 1.05rem; font-weight: 900; color: #fff; margin-bottom: 4px; }
+.ideas-fecha { font-size: .7rem; color: #666; font-weight: 600; }
+
+.ideas-back-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  background: #151515;
+  border: none;
+  border-bottom: 1px solid #1a1a1a;
+  color: #888;
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  transition: color .15s;
 }
-.ideas-fecha { font-size: .72rem; color: #888; font-weight: 600; }
-.ideas-panel-sub { font-size: .78rem; color: #666; padding: 10px 20px 14px; border-bottom: 1px solid #1a1a1a; }
+.ideas-back-btn:hover { color: #fff; background: #1a1a1a; }
+
+.ideas-panel-sub {
+  font-size: .75rem; color: #555;
+  padding: 8px 16px 10px;
+  border-bottom: 1px solid #1a1a1a;
+}
 
 /* ── Lista de ideas ── */
 .ideas-panel-list { display: flex; flex-direction: column; }
-
 .idea-panel-item {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 14px 20px;
-  border-bottom: 1px solid #1a1a1a;
+  display: flex; flex-direction: column; gap: 5px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #161616;
   transition: background .15s;
   cursor: pointer;
 }
-.idea-panel-item:hover  { background: #151515; }
+.idea-panel-item:hover { background: #131313; }
 .idea-fire  { border-left: 3px solid #e31837; }
 .idea-money { border-left: 3px solid #c8a415; }
 
-.idea-panel-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.idea-panel-emoji { font-size: 1.1rem; }
+.idea-panel-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.idea-panel-emoji { font-size: 1rem; }
 .idea-panel-badge {
-  padding: 2px 8px; border-radius: 4px;
-  font-size: .65rem; font-weight: 800;
-  color: #fff; text-transform: uppercase; letter-spacing: .5px;
+  padding: 2px 7px; border-radius: 4px;
+  font-size: .62rem; font-weight: 800; color: #fff;
+  text-transform: uppercase; letter-spacing: .5px;
 }
 .idea-panel-tag {
-  padding: 2px 8px; border-radius: 4px;
-  font-size: .65rem; font-weight: 900;
+  padding: 2px 7px; border-radius: 4px;
+  font-size: .62rem; font-weight: 900;
   letter-spacing: 1px; text-transform: uppercase;
 }
 .idea-tag-trending { background: #c0392b; color: #fff; }
@@ -626,41 +693,66 @@ img { max-width: 100%; display: block; }
 .idea-tag-hot      { background: #e31837; color: #fff; }
 .idea-tag-ahora    { background: #27ae60; color: #fff; }
 
-.idea-panel-titulo {
-  font-size: .88rem;
-  font-weight: 700;
-  color: #f0f0f0;
-  line-height: 1.45;
-}
-.idea-panel-tip {
-  font-size: .7rem;
-  color: #888;
-  font-weight: 600;
-}
+.idea-panel-titulo { font-size: .86rem; font-weight: 700; color: #f0f0f0; line-height: 1.45; }
+.idea-panel-tip    { font-size: .68rem; color: #666; font-weight: 600; }
 
 /* ── Loading ── */
-.ideas-loading { text-align: center; padding: 60px 20px; color: #666; }
+.ideas-loading { text-align: center; padding: 60px 20px; color: #555; }
 .ideas-spinner { font-size: 2rem; display: block; margin-bottom: 12px; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Footer del panel ── */
 .ideas-panel-footer {
-  padding: 16px 20px;
+  padding: 14px 16px;
   border-top: 1px solid #1a1a1a;
   background: #0a0a0a;
   text-align: center;
+  flex-shrink: 0;
 }
-.ideas-panel-footer p { font-size: .78rem; color: #555; margin-bottom: 8px; }
-.ideas-footer-link { font-size: .82rem; color: #c8a415; font-weight: 700; }
+.ideas-panel-footer p  { font-size: .75rem; color: #444; margin-bottom: 6px; }
+.ideas-footer-link     { font-size: .8rem; color: #c8a415; font-weight: 700; }
 
-/* ── Mobile ── */
-@media (max-width: 600px) {
-  .fab-ideas { bottom: 16px; right: 16px; padding: 12px 16px; font-size: .85rem; }
-  .fab-text { display: none; }
-  .fab-ideas { border-radius: 50%; width: 56px; height: 56px; padding: 0; justify-content: center; }
+/* ══════════════════════════════════════
+   MOBILE — panel sube desde abajo
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Botón flotante — círculo compacto */
+  .fab-ideas {
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    font-size: .55rem;
+  }
+  .fab-text  { font-size: .55rem; font-weight: 900; letter-spacing: 0; }
   .fab-pulse { display: none; }
-  .ideas-panel { width: 100vw; right: -100vw; border-left: none; border-top: 2px solid #ff0000; }
-  .ideas-panel.open { right: 0; }
+  .fab-icon  { font-size: 1.4rem; }
+
+  /* Panel — sube desde abajo, ocupa casi toda la pantalla */
+  .ideas-panel {
+    top: auto;
+    bottom: -100vh;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 90vh;
+    border-left: none;
+    border-top: 3px solid #ff0000;
+    border-radius: 16px 16px 0 0;
+    transition: bottom .35s cubic-bezier(.4,0,.2,1);
+  }
+  .ideas-panel.open { bottom: 0; right: 0; }
+
+  /* Grid 2x2 en mobile para los deportes */
+  .ideas-deportes-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ideas-deporte-btn   { padding: 16px 8px; }
+  .ideas-deporte-emoji { font-size: 1.8rem; }
+  .ideas-deporte-name  { font-size: .85rem; }
 }
 
 /* ── Mercado search big ── */

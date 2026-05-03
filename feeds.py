@@ -5,11 +5,27 @@ SPORTS_CONFIG = {
         'color': '#00a651',
         'bg_dark': '#0a1f0f',
         'feeds': [
-            'https://news.google.com/rss/search?q=futbol+mundial&hl=es-419&gl=US&ceid=US:es',
-            'https://news.google.com/rss/search?q=liga+española+futbol&hl=es-419&gl=US&ceid=US:es',
+            # España
+            'https://news.google.com/rss/search?q=laliga+futbol+españa&hl=es-419&gl=US&ceid=US:es',
             'https://news.google.com/rss/search?q=champions+league+futbol&hl=es-419&gl=US&ceid=US:es',
             'https://www.marca.com/rss/futbol.html',
-            'https://as.com/rss/tags/futbol.xml',
+            # England
+            'https://news.google.com/rss/search?q=premier+league+futbol&hl=es-419&gl=US&ceid=US:es',
+            # Italy
+            'https://news.google.com/rss/search?q=serie+a+italia+futbol&hl=es-419&gl=US&ceid=US:es',
+            # Germany
+            'https://news.google.com/rss/search?q=bundesliga+alemania+futbol&hl=es-419&gl=US&ceid=US:es',
+            # France
+            'https://news.google.com/rss/search?q=ligue+1+francia+futbol&hl=es-419&gl=US&ceid=US:es',
+            # América Latina
+            'https://news.google.com/rss/search?q=copa+libertadores+sudamericana&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=liga+mx+mexico+futbol&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=futbol+argentina+boca+river&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=brasileirao+flamengo+palmeiras&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=futbol+colombia+nacional+millonarios&hl=es-419&gl=US&ceid=US:es',
+            # Mundial / selecciones
+            'https://news.google.com/rss/search?q=seleccion+nacional+futbol+mundial&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=fichaje+transferencia+futbol+2025&hl=es-419&gl=US&ceid=US:es',
         ],
         'historicos': [
             'Lionel Messi', 'Cristiano Ronaldo', 'Pelé', 'Diego Maradona',
@@ -27,9 +43,17 @@ SPORTS_CONFIG = {
         'color': '#e87722',
         'bg_dark': '#1f1005',
         'feeds': [
-            'https://news.google.com/rss/search?q=NBA+baloncesto&hl=es-419&gl=US&ceid=US:es',
-            'https://news.google.com/rss/search?q=baloncesto+mundial&hl=es-419&gl=US&ceid=US:es',
+            # NBA
+            'https://news.google.com/rss/search?q=NBA+playoffs+baloncesto&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=NBA+fichaje+traspaso+baloncesto&hl=es-419&gl=US&ceid=US:es',
             'https://www.marca.com/rss/baloncesto.html',
+            # Europa
+            'https://news.google.com/rss/search?q=euroleague+baloncesto+europa&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=ACB+liga+española+baloncesto&hl=es-419&gl=US&ceid=US:es',
+            # Mundial
+            'https://news.google.com/rss/search?q=baloncesto+mundial+FIBA&hl=es-419&gl=US&ceid=US:es',
+            # Latam
+            'https://news.google.com/rss/search?q=baloncesto+latinoamerica+liga&hl=es-419&gl=US&ceid=US:es',
         ],
         'historicos': [
             'Michael Jordan', 'LeBron James', 'Kobe Bryant', 'Magic Johnson',
@@ -47,8 +71,11 @@ SPORTS_CONFIG = {
         'color': '#c8a415',
         'bg_dark': '#1a1500',
         'feeds': [
-            'https://news.google.com/rss/search?q=tenis+ATP+WTA&hl=es-419&gl=US&ceid=US:es',
-            'https://news.google.com/rss/search?q=grand+slam+tenis&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=tenis+ATP+ranking+torneo&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=WTA+tenis+femenino&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=roland+garros+tenis+2025&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=wimbledon+tenis&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=alcaraz+sinner+djokovic+tenis&hl=es-419&gl=US&ceid=US:es',
             'https://www.marca.com/rss/tenis.html',
         ],
         'historicos': [
@@ -67,8 +94,10 @@ SPORTS_CONFIG = {
         'color': '#e10600',
         'bg_dark': '#1a0000',
         'feeds': [
-            'https://news.google.com/rss/search?q=formula+1+F1&hl=es-419&gl=US&ceid=US:es',
-            'https://news.google.com/rss/search?q=gran+premio+formula1&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=formula+1+gran+premio+2025&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=F1+verstappen+hamilton+norris&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=formula1+clasificacion+carrera+resultado&hl=es-419&gl=US&ceid=US:es',
+            'https://news.google.com/rss/search?q=formula1+fichaje+piloto+escuderia&hl=es-419&gl=US&ceid=US:es',
             'https://www.marca.com/rss/motor/formula-1.html',
         ],
         'historicos': [

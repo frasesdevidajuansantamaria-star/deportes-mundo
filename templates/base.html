@@ -79,29 +79,32 @@
 <!-- PANEL DE IDEAS -->
 <div class="ideas-overlay" id="ideasOverlay" onclick="closeIdeasPanel()"></div>
 <div class="ideas-panel" id="ideasPanel">
-  <button class="ideas-close" onclick="closeIdeasPanel()">✕ Cerrar</button>
+  <div class="ideas-panel-topbar">
+    <button class="ideas-close" onclick="closeIdeasPanel()">✕ Cerrar</button>
+  </div>
   <div class="ideas-panel-body" id="ideasPanelBody">
-    <div class="ideas-loading">
-      <span class="ideas-spinner">⏳</span>
-      <p>Cargando ideas del día...</p>
-    </div>
+    <!-- El selector de deportes se muestra primero -->
   </div>
 </div>
 
 <script>
-let ideasLoaded = false;
+const DEPORTES_IDEAS = [
+  { key:'futbol',     emoji:'⚽', name:'Fútbol',     color:'#00a651' },
+  { key:'baloncesto', emoji:'🏀', name:'Baloncesto', color:'#e87722' },
+  { key:'tenis',      emoji:'🎾', name:'Tenis',      color:'#c8a415' },
+  { key:'formula1',   emoji:'🏎️', name:'Fórmula 1', color:'#e10600' },
+];
 
 function toggleIdeasPanel() {
-  const panel = document.getElementById('ideasPanel');
+  const panel   = document.getElementById('ideasPanel');
   const overlay = document.getElementById('ideasOverlay');
-  const isOpen = panel.classList.contains('open');
-  if (isOpen) {
+  if (panel.classList.contains('open')) {
     closeIdeasPanel();
   } else {
     panel.classList.add('open');
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
-    if (!ideasLoaded) loadIdeas();
+    mostrarSelector();
   }
 }
 
@@ -111,20 +114,43 @@ function closeIdeasPanel() {
   document.body.style.overflow = '';
 }
 
-function loadIdeas() {
-  fetch('/api/ideas-youtube')
+function mostrarSelector() {
+  const btns = DEPORTES_IDEAS.map(d => `
+    <button class="ideas-deporte-btn" style="--dc:${d.color}"
+            onclick="cargarIdeas('${d.key}')">
+      <span class="ideas-deporte-emoji">${d.emoji}</span>
+      <span class="ideas-deporte-name">${d.name}</span>
+      <span class="ideas-deporte-hint">Ideas de todas las ligas</span>
+    </button>`).join('');
+
+  document.getElementById('ideasPanelBody').innerHTML = `
+    <div class="ideas-selector-wrap">
+      <div class="ideas-selector-header">
+        <h3>💡 Ideas para YouTube Hoy</h3>
+        <p>¿Sobre qué deporte quieres ideas?</p>
+      </div>
+      <div class="ideas-deportes-grid">${btns}</div>
+      <button class="ideas-todos-btn" onclick="cargarIdeas('todos')">
+        🌍 Ver ideas de todos los deportes
+      </button>
+    </div>`;
+}
+
+function cargarIdeas(deporte) {
+  document.getElementById('ideasPanelBody').innerHTML = `
+    <div class="ideas-loading">
+      <span class="ideas-spinner">⏳</span>
+      <p>Buscando en todas las ligas del mundo...</p>
+    </div>`;
+  fetch('/api/ideas-youtube?deporte=' + deporte)
     .then(r => r.text())
-    .then(html => {
-      document.getElementById('ideasPanelBody').innerHTML = html;
-      ideasLoaded = true;
-    })
+    .then(html => { document.getElementById('ideasPanelBody').innerHTML = html; })
     .catch(() => {
       document.getElementById('ideasPanelBody').innerHTML =
-        '<p style="color:#888;text-align:center;padding:40px">Error cargando ideas. Inténtalo de nuevo.</p>';
+        '<div style="text-align:center;padding:40px;color:#888"><p style="font-size:2rem">😕</p><p>Error al cargar. Inténtalo de nuevo.</p><button onclick="mostrarSelector()" style="margin-top:16px;background:#333;border:none;color:#fff;padding:10px 20px;border-radius:8px;cursor:pointer">← Volver</button></div>';
     });
 }
 
-// Cerrar con Escape
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeIdeasPanel(); });
 </script>
 </body>
