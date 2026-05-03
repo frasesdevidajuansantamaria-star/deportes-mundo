@@ -102,6 +102,7 @@
       <div class="quick-nav-conf" style="color: {{ uefa.color }}">{{ uefa.emoji }} {{ uefa.name }}</div>
       {% for liga_key, liga in uefa.ligas.items() %}
       <a href="{{ url_for('futbol_liga_uefa', liga_key=liga_key) }}" class="quick-nav-liga">
+        {% if liga.espn_slug %}<img src="/api/liga-logo?slug={{ liga.espn_slug }}" class="quick-nav-logo" loading="lazy" alt="" onerror="this.style.display='none'">{% endif %}
         <span class="quick-nav-flag">{{ liga.flag }}</span>
         <span class="quick-nav-name">{{ liga.name }}</span>
       </a>
@@ -112,6 +113,7 @@
       <div class="quick-nav-conf" style="color: {{ conmebol.color }}">{{ conmebol.emoji }} {{ conmebol.name }}</div>
       {% for liga_key, liga in conmebol.ligas.items() %}
       <a href="{{ url_for('latam_liga', conf_key='conmebol', liga_key=liga_key) }}" class="quick-nav-liga">
+        {% if liga.espn_slug %}<img src="/api/liga-logo?slug={{ liga.espn_slug }}" class="quick-nav-logo" loading="lazy" alt="" onerror="this.style.display='none'">{% endif %}
         <span class="quick-nav-flag">{{ liga.flag }}</span>
         <span class="quick-nav-name">{{ liga.name }}</span>
       </a>
@@ -122,6 +124,7 @@
       <div class="quick-nav-conf" style="color: {{ concacaf.color }}">{{ concacaf.emoji }} {{ concacaf.name }}</div>
       {% for liga_key, liga in concacaf.ligas.items() %}
       <a href="{{ url_for('latam_liga', conf_key='concacaf', liga_key=liga_key) }}" class="quick-nav-liga">
+        {% if liga.espn_slug %}<img src="/api/liga-logo?slug={{ liga.espn_slug }}" class="quick-nav-logo" loading="lazy" alt="" onerror="this.style.display='none'">{% endif %}
         <span class="quick-nav-flag">{{ liga.flag }}</span>
         <span class="quick-nav-name">{{ liga.name }}</span>
       </a>

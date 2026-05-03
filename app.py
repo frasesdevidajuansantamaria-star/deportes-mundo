@@ -15,6 +15,30 @@ _cache = {}
 _cache_lock = threading.Lock()
 CACHE_TTL = 30 * 60  # 30 minutos
 
+_logo_cache = {}
+_logo_cache_lock = threading.Lock()
+
+
+def _get_espn_logo(slug: str) -> str:
+    if not slug:
+        return ''
+    with _logo_cache_lock:
+        if slug in _logo_cache:
+            return _logo_cache[slug]
+    try:
+        url = f'https://site.api.espn.com/apis/v2/sports/soccer/{slug}/scoreboard'
+        req = urllib.request.Request(url, headers={'User-Agent': 'DeportesMundo/1.0'})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read().decode())
+        leagues = data.get('leagues', [])
+        logos = leagues[0].get('logos', []) if leagues else []
+        logo_url = logos[0].get('href', '') if logos else ''
+    except Exception:
+        logo_url = ''
+    with _logo_cache_lock:
+        _logo_cache[slug] = logo_url
+    return logo_url
+
 
 def _extract_image(e):
     if hasattr(e, 'media_thumbnail') and e.media_thumbnail:
@@ -725,6 +749,15 @@ def api_panel_liga_detail():
         conf_name=conf_name, conf_color=conf_color,
         noticias=noticias, standings=standings[:12], matches=matches[:8])
     return Response(html, mimetype='text/html')
+
+
+@app.route('/api/liga-logo')
+def api_liga_logo():
+    slug = request.args.get('slug', '')
+    url = _get_espn_logo(slug)
+    if url:
+        return redirect(url, code=302)
+    return ('', 404)
 
 
 @app.route('/ads.txt')

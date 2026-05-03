@@ -23,7 +23,15 @@
 
 <!-- HERO DE LA LIGA -->
 <section class="liga-detail-hero" style="--conf-color: {{ conf.color }}">
-  <div class="liga-hero-flag">{{ liga.flag }}</div>
+  <div class="liga-hero-flag">
+    {% if liga.espn_slug %}
+    <img src="/api/liga-logo?slug={{ liga.espn_slug }}" class="liga-hero-logo" alt="{{ liga.name }}"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <span style="display:none">{{ liga.flag }}</span>
+    {% else %}
+    {{ liga.flag }}
+    {% endif %}
+  </div>
   <div class="liga-hero-body">
     <div class="liga-hero-conf-badge" style="background: {{ conf.color }}">{{ conf.emoji }} {{ conf.name }}</div>
     <h1>{{ liga.name }}</h1>

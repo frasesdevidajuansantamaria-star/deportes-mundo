@@ -45,7 +45,15 @@
     {% for liga_key, liga in conf.ligas.items() %}
     <a href="{{ url_for('futbol_liga_uefa', liga_key=liga_key) if conf_key == 'uefa' else url_for('latam_liga', conf_key=conf_key, liga_key=liga_key) }}" class="liga-card" style="--conf-color: {{ conf.color }}">
       <div class="liga-card-header">
-        <span class="liga-card-flag">{{ liga.flag }}</span>
+        <div class="liga-card-logo-wrap">
+          {% if liga.espn_slug %}
+          <img src="/api/liga-logo?slug={{ liga.espn_slug }}" class="liga-card-logo" loading="lazy" alt="{{ liga.name }}"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <span class="liga-card-flag" style="display:none">{{ liga.flag }}</span>
+          {% else %}
+          <span class="liga-card-flag">{{ liga.flag }}</span>
+          {% endif %}
+        </div>
         <div class="liga-card-title-block">
           <h3 class="liga-card-name">{{ liga.name }}</h3>
           <span class="liga-card-country">{{ liga.country }}</span>
