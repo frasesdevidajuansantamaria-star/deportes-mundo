@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}{{ player.name }} — DeportesMundo{% endblock %}
+
+{% block content %}
+
+<section class="player-profile" style="--c: {{ config.color }}">
+  <div class="player-profile-inner">
+
+    {% if player.image %}
+    <div class="player-photo">
+      <img src="{{ player.image }}" alt="{{ player.name }}" loading="lazy"/>
+    </div>
+    {% endif %}
+
+    <div class="player-info">
+      <span class="player-sport-badge" style="background: {{ config.color }}">
+        {{ config.emoji }} {{ config.name }}
+      </span>
+      <h1>{{ player.name }}</h1>
+
+      {% if player.bio %}
+      <div class="player-bio">
+        <p>{{ player.bio }}</p>
+      </div>
+      {% else %}
+      <p class="no-info">No se encontró información en Wikipedia. Prueba buscando el nombre completo.</p>
+      {% endif %}
+
+      {% if player.wiki_url %}
+      <a href="{{ player.wiki_url }}" target="_blank" rel="noopener" class="btn btn-wiki">
+        📖 Ver artículo completo en Wikipedia
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- IDEAS DE CONTENIDO -->
+<section class="section section-ideas">
+  <h2 class="section-title">💡 Ideas de Contenido para tu Canal</h2>
+  <p class="section-subtitle">Títulos listos para usar en YouTube, Instagram o TikTok</p>
+  <div class="ideas-grid">
+    {% for idea in content_ideas %}
+    <div class="idea-card">
+      <span class="idea-number">{{ loop.index }}</span>
+      <p>{{ idea }}</p>
+      <span class="idea-badge">📹 VIDEO</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- BUSCAR OTRO JUGADOR -->
+<section class="section">
+  <h2 class="section-title">🔍 Buscar Otro Jugador</h2>
+  <form action="" method="get" class="search-form" onsubmit="goToPlayer(event)">
+    <input type="text" id="player-search" placeholder="Nombre del jugador..." class="search-input"/>
+    <button type="submit" class="btn btn-search" style="background: {{ config.color }}">Buscar</button>
+  </form>
+</section>
+
+<!-- OTROS JUGADORES DEL DEPORTE -->
+<section class="section section-players">
+  <h2 class="section-title">⭐ Otros jugadores de {{ config.name }}</h2>
+  <div class="player-pills">
+    {% for p in config.historicos %}
+    {% if p != player.name %}
+    <a href="{{ url_for('jugador', nombre=p, deporte=sport_key) }}" class="player-pill" style="--c: {{ config.color }}">{{ p }}</a>
+    {% endif %}
+    {% endfor %}
+    {% for p in config.actuales %}
+    {% if p != player.name %}
+    <a href="{{ url_for('jugador', nombre=p, deporte=sport_key) }}" class="player-pill player-pill-current" style="--c: {{ config.color }}">⚡ {{ p }}</a>
+    {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<script>
+function goToPlayer(e) {
+  e.preventDefault();
+  const name = document.getElementById('player-search').value.trim();
+  if (name) {
+    window.location.href = '/jugador/' + encodeURIComponent(name) + '?deporte={{ sport_key }}';
+  }
+}
+</script>
+
+{% endblock %}

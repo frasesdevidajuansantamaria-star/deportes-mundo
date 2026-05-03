@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}DeportesMundo — Noticias Deportivas Mundiales en Español{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Noticias Deportivas Mundiales</h1>
+  <p>Fútbol · Baloncesto · Tenis · Fórmula 1 · Todo en español</p>
+</section>
+
+<!-- DEPORTES RÁPIDOS -->
+<section class="sport-pills">
+  {% for key, cfg in sports.items() %}
+  <a href="{{ url_for('sport_page', sport_key=key) }}" class="pill" style="--c: {{ cfg.color }}">
+    {{ cfg.emoji }} {{ cfg.name }}
+  </a>
+  {% endfor %}
+</section>
+
+<!-- MÁS RELEVANTES -->
+{% if top %}
+<section class="section">
+  <h2 class="section-title">🔥 Más Relevantes Hoy</h2>
+  <div class="grid grid-3">
+    {% for a in top[:9] %}
+    <a href="{{ a.link }}" target="_blank" rel="noopener" class="card card-featured">
+      <span class="badge" style="background: {{ a.sport_color }}">{{ a.sport_emoji }} {{ a.sport_name }}</span>
+      {% if a.score >= 3 %}<span class="badge badge-fire">🔥 TRENDING</span>{% endif %}
+      <h3>{{ a.title }}</h3>
+      {% if a.summary %}<p class="card-summary">{{ a.summary }}</p>{% endif %}
+      <span class="card-source">{{ a.source }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- MONETIZABLE -->
+{% if monetizable %}
+<section class="section section-monetizable">
+  <h2 class="section-title">💰 Contenido Monetizable — Ideas para tu Canal</h2>
+  <p class="section-subtitle">Estas noticias tienen alto potencial de views y engagement</p>
+  <div class="grid grid-2">
+    {% for a in monetizable %}
+    <a href="{{ a.link }}" target="_blank" rel="noopener" class="card card-money">
+      <span class="badge" style="background: {{ a.sport_color }}">{{ a.sport_emoji }} {{ a.sport_name }}</span>
+      <span class="badge badge-money">💰 MONETIZABLE</span>
+      <h3>{{ a.title }}</h3>
+      {% if a.summary %}<p class="card-summary">{{ a.summary }}</p>{% endif %}
+      <span class="card-source">{{ a.source }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ÚLTIMAS NOTICIAS -->
+{% if recientes %}
+<section class="section">
+  <h2 class="section-title">📰 Últimas Noticias</h2>
+  <div class="grid grid-4">
+    {% for a in recientes %}
+    <a href="{{ a.link }}" target="_blank" rel="noopener" class="card card-small">
+      <span class="badge" style="background: {{ a.sport_color }}">{{ a.sport_emoji }} {{ a.sport_name }}</span>
+      <h4>{{ a.title }}</h4>
+      <span class="card-source">{{ a.source }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- SECCIÓN JUGADORES -->
+<section class="section section-players">
+  <h2 class="section-title">⭐ Jugadores Históricos — Genera Contenido</h2>
+  <p class="section-subtitle">Haz clic en un jugador para ver su ficha completa y recibir ideas de contenido</p>
+  {% for key, cfg in sports.items() %}
+  <div class="players-block">
+    <h3 style="color: {{ cfg.color }}">{{ cfg.emoji }} {{ cfg.name }}</h3>
+    <div class="player-pills">
+      {% for player in cfg.historicos %}
+      <a href="{{ url_for('jugador', nombre=player, deporte=key) }}" class="player-pill" style="--c: {{ cfg.color }}">
+        {{ player }}
+      </a>
+      {% endfor %}
+      {% for player in cfg.actuales %}
+      <a href="{{ url_for('jugador', nombre=player, deporte=key) }}" class="player-pill player-pill-current" style="--c: {{ cfg.color }}">
+        ⚡ {{ player }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+{% endblock %}
