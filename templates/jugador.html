@@ -1,5 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ player.name }} — DeportesMundo{% endblock %}
+{% block title %}{{ player.name }} — Perfil, estadísticas e historia | DeportesMundo{% endblock %}
+{% block meta_desc %}Todo sobre {{ player.name }}: historia, carrera, logros y datos curiosos. {{ player.bio[:120] if player.bio else '' }}{% endblock %}
+{% block og_title %}{{ player.name }} — DeportesMundo{% endblock %}
+{% block og_desc %}Perfil completo de {{ player.name }}: carrera, estadísticas y curiosidades.{% endblock %}
+{% if player.image %}{% block tw_title %}{{ player.name }}{% endblock %}{% endif %}
 
 {% block content %}
 

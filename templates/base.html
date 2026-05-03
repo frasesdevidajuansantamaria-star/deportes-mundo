@@ -3,8 +3,20 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Noticias deportivas mundiales en español — fútbol, baloncesto, tenis, Fórmula 1"/>
+  <meta name="description" content="{% block meta_desc %}Noticias deportivas mundiales en español — fútbol, baloncesto, tenis, Fórmula 1. Actualizadas cada 30 minutos.{% endblock %}"/>
   <title>{% block title %}DeportesMundo — Noticias Deportivas{% endblock %}</title>
+
+  <!-- Open Graph — para WhatsApp, Facebook, Twitter -->
+  <meta property="og:site_name" content="DeportesMundo"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="{% block og_title %}DeportesMundo — Noticias Deportivas en Español{% endblock %}"/>
+  <meta property="og:description" content="{% block og_desc %}Fútbol, baloncesto, tenis y Fórmula 1. Las noticias más relevantes del deporte mundial, actualizadas en tiempo real.{% endblock %}"/>
+  <meta property="og:url" content="https://deportes-mundo.onrender.com{{ request.path }}"/>
+  <meta property="og:image" content="https://deportes-mundo.onrender.com/static/og-image.png"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="{% block tw_title %}DeportesMundo{% endblock %}"/>
+  <meta name="twitter:description" content="{% block tw_desc %}Noticias deportivas en español actualizadas cada 30 minutos.{% endblock %}"/>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"/>

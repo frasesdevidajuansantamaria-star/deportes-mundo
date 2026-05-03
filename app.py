@@ -307,6 +307,49 @@ def ads_txt():
     return Response(content, mimetype='text/plain')
 
 
+@app.route('/robots.txt')
+def robots_txt():
+    from flask import Response
+    content = (
+        'User-agent: *\n'
+        'Allow: /\n'
+        'Disallow: /buscar\n\n'
+        'Sitemap: https://deportes-mundo.onrender.com/sitemap.xml\n'
+    )
+    return Response(content, mimetype='text/plain')
+
+
+@app.route('/sitemap.xml')
+def sitemap_xml():
+    from flask import Response
+    BASE = 'https://deportes-mundo.onrender.com'
+    urls = [
+        ('/', '1.0', 'daily'),
+        ('/futbol-latam', '0.9', 'daily'),
+        ('/articulos', '0.7', 'weekly'),
+    ]
+    for key in SPORTS_CONFIG:
+        urls.append((f'/deporte/{key}', '0.9', 'daily'))
+    from articulos import ARTICULOS
+    for art in ARTICULOS:
+        urls.append((f'/articulo/{art["slug"]}', '0.6', 'monthly'))
+    for sport_key, cfg in SPORTS_CONFIG.items():
+        for p in cfg.get('historicos', []) + cfg.get('actuales', []):
+            slug = urllib.parse.quote(p)
+            urls.append((f'/jugador/{slug}', '0.5', 'weekly'))
+
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for path, pri, freq in urls:
+        lines.append(
+            f'  <url><loc>{BASE}{path}</loc>'
+            f'<priority>{pri}</priority>'
+            f'<changefreq>{freq}</changefreq></url>'
+        )
+    lines.append('</urlset>')
+    return Response('\n'.join(lines), mimetype='application/xml')
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
