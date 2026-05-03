@@ -791,14 +791,33 @@ def sitemap_xml():
     BASE = 'https://deportes-mundo.onrender.com'
     urls = [
         ('/', '1.0', 'daily'),
-        ('/futbol-latam', '0.9', 'daily'),
+        ('/futbol-ligas', '1.0', 'daily'),
+        ('/futbol-latam', '0.95', 'daily'),
         ('/articulos', '0.7', 'weekly'),
     ]
+
+    # UEFA y sus ligas
+    urls.append(('/futbol-ligas/uefa', '0.95', 'daily'))
+    for liga_key in UEFA_CONF.get('ligas', {}).keys():
+        urls.append((f'/futbol-ligas/uefa/{liga_key}', '0.9', 'daily'))
+
+    # LATAM confederaciones y sus ligas
+    for conf_key in ['conmebol', 'concacaf']:
+        conf = LATAM_CONFIG.get(conf_key, {})
+        urls.append((f'/futbol-latam/{conf_key}', '0.95', 'daily'))
+        for liga_key in conf.get('ligas', {}).keys():
+            urls.append((f'/futbol-latam/{conf_key}/{liga_key}', '0.9', 'daily'))
+
+    # Deportes principales
     for key in SPORTS_CONFIG:
         urls.append((f'/deporte/{key}', '0.9', 'daily'))
+
+    # Artículos
     from articulos import ARTICULOS
     for art in ARTICULOS:
         urls.append((f'/articulo/{art["slug"]}', '0.6', 'monthly'))
+
+    # Jugadores
     for sport_key, cfg in SPORTS_CONFIG.items():
         for p in cfg.get('historicos', []) + cfg.get('actuales', []):
             slug = urllib.parse.quote(p)
