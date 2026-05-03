@@ -307,6 +307,12 @@ def ads_txt():
     return Response(content, mimetype='text/plain')
 
 
+@app.route('/google0f02660566dc23c6.html')
+def google_verify():
+    from flask import Response
+    return Response('google-site-verification: google0f02660566dc23c6.html', mimetype='text/html')
+
+
 @app.route('/robots.txt')
 def robots_txt():
     from flask import Response
