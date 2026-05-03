@@ -511,6 +511,27 @@ def articulo(slug):
     )
 
 
+def _ideas_key_words(titulo):
+    import re
+    stopwords = {'que', 'con', 'del', 'los', 'las', 'una', 'unos', 'unas', 'por',
+                 'para', 'pero', 'como', 'este', 'esta', 'esto', 'ese', 'esa',
+                 'muy', 'mas', 'mas', 'sin', 'sobre', 'entre', 'bajo', 'ante',
+                 'tras', 'desde', 'hasta', 'hacia', 'desde', 'fue', 'son', 'han',
+                 'hay', 'sus', 'más', 'está', 'son', 'ser', 'all', 'the', 'and'}
+    words = set(re.sub(r'[^\w\s]', '', titulo.lower()).split())
+    return words - stopwords - {w for w in words if len(w) <= 3}
+
+
+def _is_duplicate_idea(titulo, seen_word_sets):
+    keys = _ideas_key_words(titulo)
+    if len(keys) < 2:
+        return False
+    for sw in seen_word_sets:
+        if len(keys & sw) >= 3:
+            return True
+    return False
+
+
 @app.route('/api/ideas-youtube')
 def api_ideas_youtube():
     from flask import Response
@@ -526,24 +547,31 @@ def api_ideas_youtube():
     ]
     deportes_iterar = [deporte] if deporte != 'todos' else list(SPORTS_CONFIG.keys())
     ideas = []
-    seen = set()
+    seen_exact = set()
+    seen_word_sets = []
     fi = 0
     for sport_key in deportes_iterar:
         for a in get_articles(sport_key, limit=40):
             titulo = a['title'].split(' - ')[0].split(' | ')[0].strip()
-            if len(titulo) > 20 and titulo not in seen:
-                seen.add(titulo)
-                emoji, tag, fn = formatos[fi % len(formatos)]
-                ideas.append({
-                    'emoji': emoji, 'tag': tag,
-                    'titulo': fn(titulo),
-                    'sport_emoji': a['sport_emoji'],
-                    'sport_name': a['sport_name'],
-                    'sport_color': a['sport_color'],
-                    'score': a['score'],
-                    'link': a['link'],
-                })
-                fi += 1
+            if len(titulo) <= 20:
+                continue
+            if titulo in seen_exact:
+                continue
+            if _is_duplicate_idea(titulo, seen_word_sets):
+                continue
+            seen_exact.add(titulo)
+            seen_word_sets.append(_ideas_key_words(titulo))
+            emoji, tag, fn = formatos[fi % len(formatos)]
+            ideas.append({
+                'emoji': emoji, 'tag': tag,
+                'titulo': fn(titulo),
+                'sport_emoji': a['sport_emoji'],
+                'sport_name': a['sport_name'],
+                'sport_color': a['sport_color'],
+                'score': a['score'],
+                'link': a['link'],
+            })
+            fi += 1
     ideas.sort(key=lambda x: x['score'], reverse=True)
     ideas = ideas[:25]
     fecha = datetime.datetime.now().strftime('%d/%m/%Y')
