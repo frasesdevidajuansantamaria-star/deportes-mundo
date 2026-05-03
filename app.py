@@ -225,6 +225,37 @@ def futbol_latam():
     )
 
 
+@app.route('/mercado')
+def mercado():
+    q = request.args.get('q', '').strip()
+    deporte = request.args.get('deporte', 'todos')
+
+    top10 = sorted(
+        [(n, d) for n, d in MERCADO_VALOR.items() if d.get('deporte') == 'futbol'],
+        key=lambda x: x[1]['valor_num'], reverse=True
+    )[:10]
+
+    if q:
+        ql = q.lower()
+        resultados = [(n, d) for n, d in MERCADO_VALOR.items()
+                      if ql in n.lower() or ql in d.get('equipo', '').lower()]
+    elif deporte != 'todos':
+        resultados = [(n, d) for n, d in MERCADO_VALOR.items() if d.get('deporte') == deporte]
+        resultados = sorted(resultados, key=lambda x: x[1]['valor_num'], reverse=True)
+    else:
+        resultados = []
+
+    return render_template('mercado.html',
+        sports=SPORTS_CONFIG,
+        top10=top10,
+        resultados=resultados,
+        query=q,
+        deporte=deporte,
+        mercado=MERCADO_VALOR,
+        current_sport=None,
+    )
+
+
 @app.route('/jugador/<path:nombre>')
 def jugador(nombre):
     player = get_player_wiki(nombre)
@@ -232,6 +263,7 @@ def jugador(nombre):
     config = SPORTS_CONFIG.get(sport_key, SPORTS_CONFIG['futbol'])
     content_ideas = _content_ideas(player['name'], player['bio'])
     valor = MERCADO_VALOR.get(player['name'], None)
+    player_news = get_player_news(player['name'])
 
     return render_template('jugador.html',
         sports=SPORTS_CONFIG,
@@ -240,8 +272,28 @@ def jugador(nombre):
         config=config,
         content_ideas=content_ideas,
         valor=valor,
+        player_news=player_news,
         current_sport=sport_key,
     )
+
+
+def get_player_news(nombre, limit=6):
+    parts = [p for p in nombre.lower().split() if len(p) > 3]
+    if not parts:
+        return []
+    results = []
+    for sport_key in SPORTS_CONFIG:
+        for a in get_articles(sport_key, limit=30):
+            text = (a['title'] + ' ' + a.get('summary', '')).lower()
+            if any(p in text for p in parts):
+                results.append(a)
+    seen, unique = set(), []
+    for a in results:
+        k = a['title'][:60]
+        if k not in seen:
+            seen.add(k)
+            unique.append(a)
+    return sorted(unique, key=lambda x: x['score'], reverse=True)[:limit]
 
 
 def _content_ideas(name, bio):

@@ -479,6 +479,119 @@ img { max-width: 100%; display: block; }
 
 .header-search-input::placeholder { color: var(--text-muted); }
 
+/* ── Nav Mercado ── */
+.nav-mercado {
+  color: #c8a415 !important;
+  border: 1px solid #c8a415 !important;
+  --sport-color: #c8a415;
+}
+.nav-mercado:hover, .nav-mercado.active {
+  background: #c8a415 !important;
+  color: #000 !important;
+}
+
+/* ── Valor Banner (jugador) ── */
+.valor-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #1a1500, #0f0c00);
+  border: 1px solid #c8a415;
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin: 12px 0 16px;
+  flex-wrap: wrap;
+}
+.valor-banner-label { font-size: .75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.valor-banner-num   { font-size: 1.6rem; font-weight: 900; color: #c8a415; }
+.valor-banner-team  { font-size: .85rem; color: var(--text-muted); margin-left: auto; }
+
+.player-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+/* ── Mercado — Filtros ── */
+.mercado-filtros {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 0 8px;
+  justify-content: center;
+}
+.mercado-filtro {
+  padding: 8px 20px;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--text-muted);
+  transition: all .2s;
+}
+.mercado-filtro:hover, .mercado-filtro.active {
+  background: var(--c, var(--accent));
+  border-color: var(--c, var(--accent));
+  color: #fff;
+}
+
+/* ── Mercado — Ranking table ── */
+.mercado-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.mercado-row {
+  display: grid;
+  grid-template-columns: 36px 36px 1fr 1fr 120px 100px 48px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+  cursor: pointer;
+}
+.mercado-row:last-child { border-bottom: none; }
+.mercado-row:hover { background: var(--bg3); }
+
+.mercado-pos { font-size: 1rem; font-weight: 900; color: var(--text-muted); text-align: center; }
+.mercado-flag { font-size: 1.2rem; text-align: center; }
+.mercado-nombre-rank { font-weight: 700; color: var(--text); font-size: .95rem; }
+.mercado-equipo-rank { font-size: .82rem; color: var(--text-muted); }
+.mercado-pos-rank { font-size: .78rem; color: var(--text-muted); }
+.mercado-val { font-weight: 900; font-size: 1rem; text-align: right; }
+.val-top  { color: #f4d03f; }
+.val-high { color: #c8a415; }
+.val-mid  { color: #888; }
+.mercado-tm-link { font-size: .72rem; font-weight: 700; color: var(--text-muted); text-align: center; }
+.mercado-fuente { font-size: .78rem; color: var(--text-muted); margin-top: 12px; text-align: right; }
+
+/* ── Fuentes (jugador) ── */
+.section-fuentes { background: var(--bg2); border-radius: var(--radius); padding: 30px; margin: 20px 0; }
+.fuentes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 20px; }
+.fuente-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: all .2s;
+}
+.fuente-card:hover { border-color: #c8a415; transform: translateY(-2px); }
+.fuente-icon { font-size: 1.8rem; flex-shrink: 0; margin-top: 2px; }
+.fuente-card strong { font-size: .9rem; display: block; margin-bottom: 4px; color: var(--text); }
+.fuente-card p { font-size: .8rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 6px; }
+.fuente-url { font-size: .72rem; color: #c8a415; font-weight: 700; }
+
+@media (max-width: 768px) {
+  .mercado-row { grid-template-columns: 28px 28px 1fr 80px; }
+  .mercado-equipo-rank, .mercado-pos-rank, .mercado-tm-link { display: none; }
+  .valor-banner { flex-direction: column; gap: 4px; }
+  .valor-banner-team { margin-left: 0; }
+}
+
 /* ── Footer ── */
 .site-footer {
   background: #050505;

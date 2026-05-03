@@ -3,10 +3,10 @@
 {% block meta_desc %}Todo sobre {{ player.name }}: historia, carrera, logros y datos curiosos. {{ player.bio[:120] if player.bio else '' }}{% endblock %}
 {% block og_title %}{{ player.name }} — DeportesMundo{% endblock %}
 {% block og_desc %}Perfil completo de {{ player.name }}: carrera, estadísticas y curiosidades.{% endblock %}
-{% if player.image %}{% block tw_title %}{{ player.name }}{% endblock %}{% endif %}
 
 {% block content %}
 
+<!-- PERFIL PRINCIPAL -->
 <section class="player-profile" style="--c: {{ config.color }}">
   <div class="player-profile-inner">
 
@@ -22,6 +22,14 @@
       </span>
       <h1>{{ player.name }}</h1>
 
+      {% if valor %}
+      <div class="valor-banner">
+        <span class="valor-banner-label">💰 Valor de mercado</span>
+        <span class="valor-banner-num">{{ valor.valor }}</span>
+        <span class="valor-banner-team">{{ valor.equipo }} · {{ valor.posicion }}</span>
+      </div>
+      {% endif %}
+
       {% if player.bio %}
       <div class="player-bio">
         <p>{{ player.bio }}</p>
@@ -30,14 +38,40 @@
       <p class="no-info">No se encontró información en Wikipedia. Prueba buscando el nombre completo.</p>
       {% endif %}
 
-      {% if player.wiki_url %}
-      <a href="{{ player.wiki_url }}" target="_blank" rel="noopener" class="btn btn-wiki">
-        📖 Ver artículo completo en Wikipedia
-      </a>
-      {% endif %}
+      <div class="player-actions">
+        {% if player.wiki_url %}
+        <a href="{{ player.wiki_url }}" target="_blank" rel="noopener" class="btn btn-wiki">
+          📖 Wikipedia completa
+        </a>
+        {% endif %}
+        {% if valor and valor.tm %}
+        <a href="https://www.transfermarkt.es/{{ valor.tm }}/profil/spieler/0" target="_blank" rel="noopener" class="btn btn-wiki">
+          📊 Transfermarkt
+        </a>
+        {% endif %}
+      </div>
     </div>
   </div>
 </section>
+
+<!-- NOTICIAS RELACIONADAS -->
+{% if player_news %}
+<section class="section">
+  <h2 class="section-title" style="--c: {{ config.color }}">📰 Últimas Noticias sobre {{ player.name }}</h2>
+  <div class="grid grid-3" style="margin-top:16px">
+    {% for a in player_news %}
+    <a href="{{ a.link }}" target="_blank" rel="noopener" class="card card-featured" style="--sport-color: {{ config.color }}">
+      {% if a.image %}<div class="card-img"><img src="{{ a.image }}" alt="{{ a.title }}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>{% endif %}
+      {% if a.score >= 3 %}<span class="badge badge-fire">🔥 TRENDING</span>{% endif %}
+      {% if a.score >= 2 %}<span class="badge badge-money">💰 MONETIZABLE</span>{% endif %}
+      <h3>{{ a.title }}</h3>
+      {% if a.summary %}<p class="card-summary">{{ a.summary }}</p>{% endif %}
+      <span class="card-source">📡 {{ a.source }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
 
 <!-- IDEAS DE CONTENIDO -->
 <section class="section section-ideas">
@@ -54,6 +88,50 @@
   </div>
 </section>
 
+<!-- FUENTES E INVESTIGACIÓN -->
+<section class="section section-fuentes">
+  <h2 class="section-title">🔗 Fuentes para Investigar</h2>
+  <p class="section-subtitle">Toda la información verificada con enlaces directos a la fuente original</p>
+  <div class="fuentes-grid">
+    {% if player.wiki_url %}
+    <a href="{{ player.wiki_url }}" target="_blank" rel="noopener" class="fuente-card">
+      <span class="fuente-icon">📖</span>
+      <div>
+        <strong>Wikipedia en español</strong>
+        <p>Biografía, estadísticas y trayectoria completa de {{ player.name }}</p>
+        <span class="fuente-url">{{ player.wiki_url[:50] }}...</span>
+      </div>
+    </a>
+    {% endif %}
+    {% if valor and valor.tm %}
+    <a href="https://www.transfermarkt.es/{{ valor.tm }}/profil/spieler/0" target="_blank" rel="noopener" class="fuente-card">
+      <span class="fuente-icon">💶</span>
+      <div>
+        <strong>Transfermarkt — Valor de mercado</strong>
+        <p>Historial de valores, estadísticas de transferencias y contratos</p>
+        <span class="fuente-url">transfermarkt.es</span>
+      </div>
+    </a>
+    {% endif %}
+    <a href="https://news.google.com/search?q={{ player.name | urlencode }}&hl=es-419" target="_blank" rel="noopener" class="fuente-card">
+      <span class="fuente-icon">📰</span>
+      <div>
+        <strong>Google Noticias — Actualidad</strong>
+        <p>Las últimas noticias publicadas sobre {{ player.name }} en medios globales</p>
+        <span class="fuente-url">news.google.com</span>
+      </div>
+    </a>
+    <a href="https://es.wikipedia.org/w/index.php?search={{ player.name | urlencode }}" target="_blank" rel="noopener" class="fuente-card">
+      <span class="fuente-icon">🔍</span>
+      <div>
+        <strong>Más en Wikipedia</strong>
+        <p>Buscar más información sobre {{ player.name }} y su entorno deportivo</p>
+        <span class="fuente-url">es.wikipedia.org</span>
+      </div>
+    </a>
+  </div>
+</section>
+
 <!-- BUSCAR OTRO JUGADOR -->
 <section class="section">
   <h2 class="section-title">🔍 Buscar Otro Jugador</h2>
@@ -63,20 +141,16 @@
   </form>
 </section>
 
-<!-- OTROS JUGADORES DEL DEPORTE -->
+<!-- OTROS JUGADORES -->
 <section class="section section-players">
   <h2 class="section-title">⭐ Otros jugadores de {{ config.name }}</h2>
   <div class="player-pills">
-    {% for p in config.historicos %}
-    {% if p != player.name %}
+    {% for p in config.historicos %}{% if p != player.name %}
     <a href="{{ url_for('jugador', nombre=p, deporte=sport_key) }}" class="player-pill" style="--c: {{ config.color }}">{{ p }}</a>
-    {% endif %}
-    {% endfor %}
-    {% for p in config.actuales %}
-    {% if p != player.name %}
+    {% endif %}{% endfor %}
+    {% for p in config.actuales %}{% if p != player.name %}
     <a href="{{ url_for('jugador', nombre=p, deporte=sport_key) }}" class="player-pill player-pill-current" style="--c: {{ config.color }}">⚡ {{ p }}</a>
-    {% endif %}
-    {% endfor %}
+    {% endif %}{% endfor %}
   </div>
 </section>
 
@@ -84,9 +158,7 @@
 function goToPlayer(e) {
   e.preventDefault();
   const name = document.getElementById('player-search').value.trim();
-  if (name) {
-    window.location.href = '/jugador/' + encodeURIComponent(name) + '?deporte={{ sport_key }}';
-  }
+  if (name) window.location.href = '/jugador/' + encodeURIComponent(name) + '?deporte={{ sport_key }}';
 }
 </script>
 

@@ -39,6 +39,9 @@
       <a href="{{ url_for('futbol_latam') }}" class="nav-link" style="--sport-color:#003087; border:1px solid #003087">
         🌎 LATAM
       </a>
+      <a href="{{ url_for('mercado') }}" class="nav-link nav-mercado {% if request.endpoint == 'mercado' %}active{% endif %}">
+        💰 MERCADO
+      </a>
       <a href="{{ url_for('articulos') }}" class="nav-link" style="--sport-color:#7c3aed; border:1px solid #7c3aed">
         📝 ARTÍCULOS
       </a>
