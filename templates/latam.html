@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Fútbol Latinoamericano — CONMEBOL & CONCACAF | DeportesMundo{% endblock %}
+
+{% block content %}
+
+<section class="latam-hero">
+  <div class="latam-hero-inner">
+    <h1>⚽ Fútbol Latinoamericano</h1>
+    <p>CONMEBOL · CONCACAF · Ligas · Posiciones · Goleadores · Mercado</p>
+    <div class="conf-badges">
+      <span class="conf-badge" style="background:#003087">🏆 CONMEBOL</span>
+      <span class="conf-badge" style="background:#c8102e">🏆 CONCACAF</span>
+    </div>
+  </div>
+</section>
+
+{% for conf_key, conf_data in latam.items() %}
+<section class="section conf-section">
+  <div class="conf-header" style="border-color: {{ conf_data.config.color }}">
+    <h2 style="color: {{ conf_data.config.color }}">🏆 {{ conf_data.config.name }}</h2>
+  </div>
+
+  {% for liga_key, liga_data in conf_data.ligas.items() %}
+  <div class="liga-block" id="{{ liga_key }}">
+    <div class="liga-header">
+      <span class="liga-flag">{{ liga_data.config.flag }}</span>
+      <h3>{{ liga_data.config.name }}</h3>
+    </div>
+
+    <div class="liga-grid">
+
+      <!-- NOTICIAS -->
+      <div class="liga-news">
+        <h4 class="sub-title">📰 Últimas Noticias</h4>
+        {% if liga_data.news %}
+          {% for a in liga_data.news %}
+          <a href="{{ a.link }}" target="_blank" rel="noopener" class="news-row">
+            {% if a.score >= 2 %}<span class="badge badge-money-sm">💰</span>{% endif %}
+            <span class="news-row-title">{{ a.title }}</span>
+            <span class="news-row-source">{{ a.source }}</span>
+          </a>
+          {% endfor %}
+        {% else %}
+          <p class="no-info">Cargando noticias...</p>
+        {% endif %}
+      </div>
+
+      <!-- POSICIONES -->
+      <div class="liga-standings">
+        <h4 class="sub-title">📊 Posiciones</h4>
+        {% if liga_data.standings %}
+        <table class="standings-table">
+          <thead>
+            <tr><th>#</th><th>Equipo</th><th>PJ</th><th>PTS</th><th>GF</th><th>GC</th></tr>
+          </thead>
+          <tbody>
+            {% for row in liga_data.standings[:10] %}
+            <tr {% if loop.index <= 4 %}class="zone-clasif"{% endif %}>
+              <td class="pos-num">{{ row.pos }}</td>
+              <td class="team-cell">
+                {% if row.logo %}<img src="{{ row.logo }}" alt="" class="team-logo-sm" loading="lazy"/>{% endif %}
+                {{ row.team }}
+              </td>
+              <td>{{ row.pj }}</td>
+              <td class="pts-bold">{{ row.pts }}</td>
+              <td>{{ row.gf }}</td>
+              <td>{{ row.gc }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="no-info-sm">Posiciones no disponibles — consulta ESPN Deportes</p>
+        {% endif %}
+
+        <!-- EQUIPOS -->
+        {% if liga_data.config.equipos is defined %}
+        <div class="equipos-list">
+          <h4 class="sub-title" style="margin-top:16px">🏟️ Equipos</h4>
+          <div class="player-pills" style="flex-wrap:wrap">
+            {% for eq in liga_data.config.equipos %}
+            <span class="equipo-pill">{{ eq }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- JUGADORES + MERCADO -->
+      <div class="liga-players">
+        <h4 class="sub-title">⭐ Jugadores Destacados</h4>
+        {% for jugador_nombre in liga_data.config.top_jugadores %}
+        <div class="jugador-row">
+          <a href="{{ url_for('jugador', nombre=jugador_nombre, deporte='futbol') }}" class="jugador-link">
+            {{ jugador_nombre }}
+          </a>
+          {% if jugador_nombre in mercado %}
+          <span class="valor-badge">💰 {{ mercado[jugador_nombre].valor }}</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        {% if liga_data.config.top_jugadores %}
+        <a href="{{ url_for('jugador', nombre=liga_data.config.top_jugadores[0], deporte='futbol') }}"
+           class="btn btn-wiki" style="margin-top:12px; font-size:.8rem; padding: 7px 14px">
+          Ver fichas completas →
+        </a>
+        {% endif %}
+      </div>
+
+    </div><!-- /liga-grid -->
+  </div><!-- /liga-block -->
+  {% endfor %}
+
+</section>
+{% endfor %}
+
+<!-- MERCADO GLOBAL -->
+<section class="section section-monetizable">
+  <h2 class="section-title">💰 Valoración de Mercado — Top Jugadores LATAM</h2>
+  <p class="section-subtitle">Datos de referencia Transfermarkt · Actualización mensual</p>
+  <div class="mercado-grid">
+    {% for nombre, info in mercado.items() %}
+    <div class="mercado-card">
+      <a href="{{ url_for('jugador', nombre=nombre, deporte='futbol') }}" class="mercado-nombre">{{ nombre }}</a>
+      <span class="mercado-valor">{{ info.valor }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

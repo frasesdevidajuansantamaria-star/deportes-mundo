@@ -23,6 +23,12 @@
         {{ cfg.emoji }} {{ cfg.name | upper }}
       </a>
       {% endfor %}
+      <a href="{{ url_for('futbol_latam') }}" class="nav-link" style="--sport-color:#003087; border:1px solid #003087">
+        🌎 LATAM
+      </a>
+      <a href="{{ url_for('articulos') }}" class="nav-link" style="--sport-color:#7c3aed; border:1px solid #7c3aed">
+        📝 ARTÍCULOS
+      </a>
     </nav>
     <button class="menu-toggle" onclick="document.querySelector('.main-nav').classList.toggle('open')">☰</button>
   </div>

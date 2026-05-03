@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Artículos — Historia del Deporte | DeportesMundo{% endblock %}
+
+{% block content %}
+
+<section class="hero" style="padding-bottom:20px">
+  <h1>📝 Artículos y Análisis</h1>
+  <p>Historia, análisis y curiosidades del deporte mundial</p>
+</section>
+
+<section class="section">
+  <div class="grid grid-2">
+    {% for art in articulos %}
+    <a href="{{ url_for('articulo', slug=art.slug) }}" class="card card-article">
+      <span class="badge" style="background: #00a651">📝 {{ art.categoria }}</span>
+      <h2 class="article-card-title">{{ art.titulo }}</h2>
+      <p class="card-summary">{{ art.resumen }}</p>
+      <div class="article-meta">
+        <span>✍️ {{ art.autor }}</span>
+        <span>📅 {{ art.fecha }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ art.titulo }} | DeportesMundo{% endblock %}
+
+{% block content %}
+
+<article class="article-full">
+  <header class="article-header">
+    <span class="badge" style="background:#00a651">📝 {{ art.categoria }}</span>
+    <h1>{{ art.titulo }}</h1>
+    <div class="article-meta">
+      <span>✍️ {{ art.autor }}</span>
+      <span>📅 {{ art.fecha }}</span>
+    </div>
+    <p class="article-intro">{{ art.resumen }}</p>
+  </header>
+
+  <div class="article-body">
+    {{ art.cuerpo | safe }}
+  </div>
+
+  <footer class="article-footer">
+    <p>¿Te gustó este artículo? Compártelo y síguenos para más contenido deportivo.</p>
+    <a href="{{ url_for('articulos') }}" class="btn btn-wiki">← Ver todos los artículos</a>
+  </footer>
+</article>
+
+{% if otros %}
+<section class="section">
+  <h2 class="section-title">📰 Más artículos</h2>
+  <div class="grid grid-3">
+    {% for a in otros %}
+    <a href="{{ url_for('articulo', slug=a.slug) }}" class="card card-article">
+      <span class="badge" style="background:#00a651">📝 {{ a.categoria }}</span>
+      <h3 class="article-card-title">{{ a.titulo }}</h3>
+      <p class="card-summary">{{ a.resumen }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
