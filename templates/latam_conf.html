@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ conf.name }} — Ligas y Torneos | DeportesMundo{% endblock %}
+{% block meta_desc %}Todas las ligas de {{ conf.name }}: {{ conf.full_name }}. Explora posiciones, partidos, noticias y fichajes de cada liga.{% endblock %}
+
+{% block content %}
+
+<!-- BREADCRUMB -->
+<nav class="latam-breadcrumb">
+  <a href="{{ url_for('futbol_latam') }}">🌎 LATAM</a>
+  <span>›</span>
+  <span style="color: {{ conf.color }}">{{ conf.emoji }} {{ conf.name }}</span>
+</nav>
+
+<!-- HEADER CONFEDERACIÓN -->
+<section class="conf-detail-hero" style="--conf-color: {{ conf.color }}">
+  <div class="conf-detail-hero-inner">
+    <div class="conf-detail-badge" style="background: {{ conf.color }}">{{ conf.emoji }} {{ conf.name }}</div>
+    <h1>{{ conf.full_name }}</h1>
+    <p>{{ conf.descripcion }}</p>
+    <div class="conf-detail-meta">
+      <div class="conf-detail-stat">
+        <span class="conf-stat-num">{{ conf.paises }}</span>
+        <span class="conf-stat-label">Países miembros</span>
+      </div>
+      <div class="conf-detail-stat">
+        <span class="conf-stat-num">{{ conf.ligas | length }}</span>
+        <span class="conf-stat-label">Ligas y torneos</span>
+      </div>
+      <div class="conf-detail-stat">
+        <span class="conf-stat-num">📍</span>
+        <span class="conf-stat-label">{{ conf.sede }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GRID DE LIGAS -->
+<section class="section">
+  <h2 class="section-title">🏟️ Ligas y Torneos de {{ conf.name }}</h2>
+  <div class="ligas-grid">
+    {% for liga_key, liga in conf.ligas.items() %}
+    <a href="{{ url_for('latam_liga', conf_key=conf_key, liga_key=liga_key) }}" class="liga-card" style="--conf-color: {{ conf.color }}">
+      <div class="liga-card-header">
+        <span class="liga-card-flag">{{ liga.flag }}</span>
+        <div class="liga-card-title-block">
+          <h3 class="liga-card-name">{{ liga.name }}</h3>
+          <span class="liga-card-country">{{ liga.country }}</span>
+        </div>
+      </div>
+      <p class="liga-card-desc">{{ liga.descripcion }}</p>
+      <div class="liga-card-teams">
+        {% for eq in liga.equipos[:4] %}
+        <span class="liga-team-chip">{{ eq }}</span>
+        {% endfor %}
+        {% if liga.equipos | length > 4 %}
+        <span class="liga-team-chip liga-team-more">+{{ liga.equipos | length - 4 }}</span>
+        {% endif %}
+      </div>
+      <div class="liga-card-footer">
+        <span class="liga-card-sections">
+          <span>📊 Posiciones</span>
+          <span>⚽ Partidos</span>
+          <span>📰 Noticias</span>
+          <span>💰 Fichajes</span>
+        </span>
+        <span class="liga-card-arrow">Ver liga →</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- OTRAS CONFEDERACIONES -->
+<section class="section">
+  <h2 class="section-title">🌎 Otras Confederaciones</h2>
+  <div class="other-confs-row">
+    {% for ck, cf in latam_config.items() %}
+    {% if ck != conf_key %}
+    <a href="{{ url_for('latam_conf', conf_key=ck) }}" class="other-conf-card" style="--conf-color: {{ cf.color }}">
+      <span class="other-conf-emoji">{{ cf.emoji }}</span>
+      <div>
+        <strong>{{ cf.name }}</strong>
+        <small>{{ cf.paises }} países · {{ cf.ligas | length }} ligas</small>
+      </div>
+      <span>→</span>
+    </a>
+    {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+{% if rows %}
+<table class="standings-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th class="team-col">Equipo</th>
+      <th title="Partidos Jugados">PJ</th>
+      <th title="Puntos" class="pts-col">PTS</th>
+      <th title="Goles a Favor">GF</th>
+      <th title="Goles en Contra">GC</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr class="
+      {% if loop.index <= 2 %}zone-champions
+      {% elif loop.index <= 4 %}zone-clasif
+      {% elif loop.index >= rows|length - 2 %}zone-descenso
+      {% endif %}
+    ">
+      <td class="pos-num">
+        {% if loop.index <= 2 %}<span class="pos-dot pos-champions"></span>
+        {% elif loop.index <= 4 %}<span class="pos-dot pos-clasif"></span>
+        {% elif loop.index >= rows|length - 2 %}<span class="pos-dot pos-descenso"></span>
+        {% else %}<span class="pos-dot"></span>{% endif %}
+        {{ row.pos }}
+      </td>
+      <td class="team-cell">
+        {% if row.logo %}
+        <img src="{{ row.logo }}" alt="{{ row.team }}" class="team-logo-sm" loading="lazy"
+             onerror="this.style.display='none'"/>
+        {% endif %}
+        <span>{{ row.team }}</span>
+      </td>
+      <td>{{ row.pj }}</td>
+      <td class="pts-bold">{{ row.pts }}</td>
+      <td>{{ row.gf }}</td>
+      <td>{{ row.gc }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="standings-legend">
+  <span><span class="pos-dot pos-champions"></span> Fase de grupos</span>
+  <span><span class="pos-dot pos-clasif"></span> Clasificación</span>
+  <span><span class="pos-dot pos-descenso"></span> Zona descenso</span>
+</div>
+{% else %}
+<div class="standings-empty">
+  <p>📊 Tabla de posiciones no disponible</p>
+  <small>Los datos de esta liga pueden no estar en la API de ESPN.</small>
+  <a href="https://www.espn.com.mx/futbol/" target="_blank" rel="noopener" class="btn-espn">Ver en ESPN Deportes →</a>
+</div>
+{% endif %}

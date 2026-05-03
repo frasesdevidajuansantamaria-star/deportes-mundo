@@ -162,6 +162,49 @@ def get_latam_news(liga_cfg, limit=5):
     return unique[:limit]
 
 
+def get_espn_scoreboard(slug):
+    url = f'https://site.api.espn.com/apis/v2/sports/soccer/{slug}/scoreboard'
+    cache_key = f'scoreboard_{slug}'
+    with _cache_lock:
+        if cache_key in _cache:
+            ts, data = _cache[cache_key]
+            if time.time() - ts < CACHE_TTL:
+                return data
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'DeportesMundo/1.0'})
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            data = json.loads(resp.read().decode())
+        events = data.get('events', [])
+        matches = []
+        for ev in events[:12]:
+            comp = (ev.get('competitions') or [{}])[0]
+            competitors = comp.get('competitors', [])
+            home = next((c for c in competitors if c.get('homeAway') == 'home'), {})
+            away = next((c for c in competitors if c.get('homeAway') == 'away'), {})
+            status = ev.get('status', {})
+            state = status.get('type', {}).get('state', 'pre')
+            home_logos = home.get('team', {}).get('logos') or []
+            away_logos = away.get('team', {}).get('logos') or []
+            matches.append({
+                'date': ev.get('date', ''),
+                'name': ev.get('name', ''),
+                'home': home.get('team', {}).get('displayName', '?'),
+                'home_logo': home_logos[0].get('href', '') if home_logos else '',
+                'home_score': home.get('score', '-'),
+                'away': away.get('team', {}).get('displayName', '?'),
+                'away_logo': away_logos[0].get('href', '') if away_logos else '',
+                'away_score': away.get('score', '-'),
+                'state': state,
+                'description': status.get('type', {}).get('description', 'Programado'),
+                'venue': comp.get('venue', {}).get('fullName', ''),
+            })
+        with _cache_lock:
+            _cache[cache_key] = (time.time(), matches)
+        return matches
+    except Exception:
+        return []
+
+
 # ─── Rutas ────────────────────────────────────────────────────────────────────
 
 @app.route('/')
@@ -205,24 +248,85 @@ def sport_page(sport_key):
 
 @app.route('/futbol-latam')
 def futbol_latam():
-    data = {}
-    for conf_key, conf in LATAM_CONFIG.items():
-        data[conf_key] = {'config': conf, 'ligas': {}}
-        for liga_key, liga in conf['ligas'].items():
-            news = get_latam_news(liga, limit=5)
-            standings = get_espn_standings(liga['espn_slug']) if liga.get('espn_slug') else []
-            data[conf_key]['ligas'][liga_key] = {
-                'config': liga,
-                'news': news,
-                'standings': standings,
-            }
     return render_template('latam.html',
         sports=SPORTS_CONFIG,
-        latam=data,
         latam_config=LATAM_CONFIG,
-        mercado=MERCADO_VALOR,
         current_sport='futbol',
     )
+
+
+@app.route('/futbol-latam/<conf_key>')
+def latam_conf(conf_key):
+    if conf_key not in LATAM_CONFIG:
+        return redirect(url_for('futbol_latam'))
+    conf = LATAM_CONFIG[conf_key]
+    return render_template('latam_conf.html',
+        sports=SPORTS_CONFIG,
+        conf=conf,
+        conf_key=conf_key,
+        latam_config=LATAM_CONFIG,
+        current_sport='futbol',
+    )
+
+
+@app.route('/futbol-latam/<conf_key>/<liga_key>')
+def latam_liga(conf_key, liga_key):
+    if conf_key not in LATAM_CONFIG:
+        return redirect(url_for('futbol_latam'))
+    conf = LATAM_CONFIG[conf_key]
+    if liga_key not in conf['ligas']:
+        return redirect(url_for('latam_conf', conf_key=conf_key))
+    liga = conf['ligas'][liga_key]
+
+    noticias = get_latam_news(liga, limit=20)
+    fichajes_url = liga.get('feeds_fichajes', '')
+    fichajes = []
+    if fichajes_url:
+        raw = _fetch_feed(fichajes_url)[:10]
+        for a in raw:
+            a['score'] = score_article(a['title'], a.get('summary', ''))
+            fichajes.append(a)
+
+    otras_ligas = [(k, v) for k, v in conf['ligas'].items() if k != liga_key]
+
+    return render_template('latam_liga.html',
+        sports=SPORTS_CONFIG,
+        conf=conf,
+        conf_key=conf_key,
+        liga=liga,
+        liga_key=liga_key,
+        latam_config=LATAM_CONFIG,
+        noticias=noticias,
+        fichajes=fichajes,
+        otras_ligas=otras_ligas,
+        current_sport='futbol',
+    )
+
+
+@app.route('/api/liga-standings/<conf_key>/<liga_key>')
+def api_liga_standings(conf_key, liga_key):
+    from flask import Response
+    conf = LATAM_CONFIG.get(conf_key, {})
+    liga = conf.get('ligas', {}).get(liga_key, {})
+    slug = liga.get('espn_slug', '')
+    if not slug:
+        return Response('<p class="no-info-sm">Tabla no disponible</p>', mimetype='text/html')
+    rows = get_espn_standings(slug)
+    html = render_template('_standings.html', rows=rows, liga=liga)
+    return Response(html, mimetype='text/html')
+
+
+@app.route('/api/liga-partidos/<conf_key>/<liga_key>')
+def api_liga_partidos(conf_key, liga_key):
+    from flask import Response
+    conf = LATAM_CONFIG.get(conf_key, {})
+    liga = conf.get('ligas', {}).get(liga_key, {})
+    slug = liga.get('espn_slug', '')
+    if not slug:
+        return Response('<p class="no-info-sm">Partidos no disponibles</p>', mimetype='text/html')
+    matches = get_espn_scoreboard(slug)
+    html = render_template('_partidos.html', matches=matches, liga=liga)
+    return Response(html, mimetype='text/html')
 
 
 @app.route('/mercado')

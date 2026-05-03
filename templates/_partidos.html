@@ -1,0 +1,65 @@
+{% if matches %}
+<div class="partidos-list">
+  {% for m in matches %}
+  <div class="partido-card partido-{{ m.state }}">
+    <div class="partido-status">
+      {% if m.state == 'in' %}
+      <span class="status-live">🔴 EN VIVO</span>
+      {% elif m.state == 'post' %}
+      <span class="status-final">✓ Final</span>
+      {% else %}
+      <span class="status-pre">🕐 {{ m.description }}</span>
+      {% endif %}
+      {% if m.date %}
+      <span class="partido-fecha">
+        {{ m.date[:10] }}
+        {% if m.date | length > 10 %}{{ ' · ' + m.date[11:16] + ' UTC' }}{% endif %}
+      </span>
+      {% endif %}
+    </div>
+
+    <div class="partido-matchup">
+      <div class="partido-team partido-home">
+        {% if m.home_logo %}
+        <img src="{{ m.home_logo }}" alt="{{ m.home }}" class="partido-logo"
+             onerror="this.style.display='none'"/>
+        {% endif %}
+        <span class="partido-team-name">{{ m.home }}</span>
+      </div>
+
+      <div class="partido-score-box">
+        {% if m.state == 'pre' %}
+        <span class="score-vs">VS</span>
+        {% else %}
+        <span class="score-home {% if m.home_score > m.away_score and m.state == 'post' %}score-winner{% endif %}">
+          {{ m.home_score }}
+        </span>
+        <span class="score-sep">-</span>
+        <span class="score-away {% if m.away_score > m.home_score and m.state == 'post' %}score-winner{% endif %}">
+          {{ m.away_score }}
+        </span>
+        {% endif %}
+      </div>
+
+      <div class="partido-team partido-away">
+        <span class="partido-team-name">{{ m.away }}</span>
+        {% if m.away_logo %}
+        <img src="{{ m.away_logo }}" alt="{{ m.away }}" class="partido-logo"
+             onerror="this.style.display='none'"/>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if m.venue %}
+    <div class="partido-venue">📍 {{ m.venue }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="standings-empty">
+  <p>⚽ No hay partidos programados en este momento</p>
+  <small>Los partidos se muestran cuando hay jornada activa o próxima.</small>
+  <a href="https://www.espn.com.mx/futbol/" target="_blank" rel="noopener" class="btn-espn">Ver calendario en ESPN →</a>
+</div>
+{% endif %}

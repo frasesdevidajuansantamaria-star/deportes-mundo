@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% block title %}{{ liga.name }} — Posiciones, Partidos y Noticias | DeportesMundo{% endblock %}
+{% block meta_desc %}{{ liga.name }}: posiciones, próximos partidos, noticias de hoy, fichajes, bajas y sanciones. Toda la información de {{ liga.country }} en un solo lugar.{% endblock %}
+{% block og_title %}{{ liga.name }} | DeportesMundo{% endblock %}
+{% block og_desc %}Posiciones, partidos, noticias y fichajes de {{ liga.name }}.{% endblock %}
+
+{% block content %}
+
+<!-- BREADCRUMB -->
+<nav class="latam-breadcrumb">
+  <a href="{{ url_for('futbol_latam') }}">🌎 LATAM</a>
+  <span>›</span>
+  <a href="{{ url_for('latam_conf', conf_key=conf_key) }}" style="color: {{ conf.color }}">{{ conf.emoji }} {{ conf.name }}</a>
+  <span>›</span>
+  <span>{{ liga.flag }} {{ liga.name }}</span>
+</nav>
+
+<!-- HERO DE LA LIGA -->
+<section class="liga-detail-hero" style="--conf-color: {{ conf.color }}">
+  <div class="liga-hero-flag">{{ liga.flag }}</div>
+  <div class="liga-hero-body">
+    <div class="liga-hero-conf-badge" style="background: {{ conf.color }}">{{ conf.emoji }} {{ conf.name }}</div>
+    <h1>{{ liga.name }}</h1>
+    <p class="liga-hero-country">📍 {{ liga.country }}</p>
+    <p class="liga-hero-desc">{{ liga.descripcion }}</p>
+  </div>
+</section>
+
+<!-- TABS NAVEGACIÓN -->
+<div class="liga-tabs-bar" id="ligaTabs">
+  <button class="liga-tab active" onclick="showTab('posiciones', this)">📊 Posiciones</button>
+  <button class="liga-tab" onclick="showTab('partidos', this)">⚽ Partidos</button>
+  <button class="liga-tab" onclick="showTab('noticias', this)">📰 Noticias</button>
+  <button class="liga-tab" onclick="showTab('fichajes', this)">💰 Fichajes &amp; Traspasos</button>
+  <button class="liga-tab" onclick="showTab('equipos', this)">🏟️ Equipos</button>
+</div>
+
+<!-- ─── TAB: POSICIONES ───────────────────────────────────────── -->
+<section class="liga-tab-content active" id="tab-posiciones">
+  <div class="standings-wrap" id="standingsContainer">
+    <div class="liga-loading">
+      <span class="liga-spinner">⚙️</span>
+      <p>Cargando tabla de posiciones...</p>
+    </div>
+  </div>
+  <p class="standings-source">Fuente: ESPN Deportes · Actualización automática</p>
+</section>
+
+<!-- ─── TAB: PARTIDOS ─────────────────────────────────────────── -->
+<section class="liga-tab-content" id="tab-partidos">
+  <div class="partidos-wrap" id="partidosContainer">
+    <div class="liga-loading">
+      <span class="liga-spinner">⚙️</span>
+      <p>Cargando partidos...</p>
+    </div>
+  </div>
+  <p class="standings-source">Fuente: ESPN Deportes · Partidos recientes y próximos</p>
+</section>
+
+<!-- ─── TAB: NOTICIAS ─────────────────────────────────────────── -->
+<section class="liga-tab-content" id="tab-noticias">
+  {% if noticias %}
+  <div class="liga-news-grid">
+    {% for a in noticias %}
+    <a href="{{ a.link }}" target="_blank" rel="noopener" class="liga-news-card {% if a.score >= 2 %}liga-news-hot{% endif %}">
+      {% if a.image %}
+      <div class="liga-news-img" style="background-image: url('{{ a.image }}')"></div>
+      {% endif %}
+      <div class="liga-news-body">
+        {% if a.score >= 3 %}<span class="liga-news-badge badge-fire">🔥 Trending</span>
+        {% elif a.score >= 2 %}<span class="liga-news-badge badge-money">💰 Destacado</span>{% endif %}
+        <h3 class="liga-news-title">{{ a.title }}</h3>
+        {% if a.summary %}<p class="liga-news-summary">{{ a.summary }}</p>{% endif %}
+        <div class="liga-news-meta">
+          <span>{{ a.source }}</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="liga-empty">
+    <p>📡 Cargando noticias de {{ liga.name }}...</p>
+    <small>Las noticias se actualizan cada 30 minutos</small>
+  </div>
+  {% endif %}
+</section>
+
+<!-- ─── TAB: FICHAJES ─────────────────────────────────────────── -->
+<section class="liga-tab-content" id="tab-fichajes">
+  {% if fichajes %}
+  <div class="fichajes-header">
+    <p>📋 Últimas noticias de fichajes, traspasos, bajas y sanciones en {{ liga.name }}</p>
+  </div>
+  <div class="fichajes-list">
+    {% for f in fichajes %}
+    <a href="{{ f.link }}" target="_blank" rel="noopener" class="fichaje-item {% if f.score >= 2 %}fichaje-hot{% endif %}">
+      <div class="fichaje-icon">
+        {% if 'sancion' in f.title | lower or 'suspendido' in f.title | lower %}🚫
+        {% elif 'lesion' in f.title | lower or 'lesionado' in f.title | lower %}🩹
+        {% elif 'baja' in f.title | lower or 'se va' in f.title | lower %}📤
+        {% elif 'alta' in f.title | lower or 'firma' in f.title | lower or 'llega' in f.title | lower %}📥
+        {% elif 'renueva' in f.title | lower or 'contrato' in f.title | lower %}📝
+        {% else %}⚽{% endif %}
+      </div>
+      <div class="fichaje-body">
+        <p class="fichaje-title">{{ f.title }}</p>
+        {% if f.summary %}<p class="fichaje-summary">{{ f.summary }}</p>{% endif %}
+        <span class="fichaje-source">{{ f.source }}</span>
+      </div>
+      {% if f.score >= 2 %}<span class="fichaje-badge">🔥</span>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="liga-empty">
+    <p>📭 No hay novedades de mercado en este momento</p>
+    <small>Se actualiza cada 30 minutos con las últimas transferencias</small>
+  </div>
+  {% endif %}
+</section>
+
+<!-- ─── TAB: EQUIPOS ──────────────────────────────────────────── -->
+<section class="liga-tab-content" id="tab-equipos">
+  <div class="equipos-detail-grid">
+    {% for eq in liga.equipos %}
+    <a href="{{ url_for('buscar', q=eq) }}" class="equipo-detail-card">
+      <div class="equipo-detail-icon">🏟️</div>
+      <div class="equipo-detail-name">{{ eq }}</div>
+      <div class="equipo-detail-action">Ver noticias →</div>
+    </a>
+    {% endfor %}
+  </div>
+
+  {% if liga.top_jugadores %}
+  <div class="jugadores-destacados">
+    <h3>⭐ Jugadores Destacados</h3>
+    <div class="jugadores-dest-grid">
+      {% for j in liga.top_jugadores %}
+      <a href="{{ url_for('jugador', nombre=j, deporte='futbol') }}" class="jugador-dest-card">
+        <span class="jugador-dest-emoji">⚽</span>
+        <span class="jugador-dest-nombre">{{ j }}</span>
+        <span class="jugador-dest-action">Ver perfil →</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+<!-- OTRAS LIGAS DE ESTA CONF -->
+{% if otras_ligas %}
+<section class="section">
+  <h3 class="section-title">🏆 Otras ligas de {{ conf.name }}</h3>
+  <div class="otras-ligas-row">
+    {% for ok, ol in otras_ligas %}
+    <a href="{{ url_for('latam_liga', conf_key=conf_key, liga_key=ok) }}" class="otra-liga-chip" style="--conf-color: {{ conf.color }}">
+      {{ ol.flag }} {{ ol.name }}
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<script>
+const CONF_KEY = '{{ conf_key }}';
+const LIGA_KEY = '{{ liga_key }}';
+let standingsLoaded = false;
+let partidosLoaded  = false;
+
+function showTab(name, btn) {
+  document.querySelectorAll('.liga-tab-content').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.liga-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+
+  if (name === 'posiciones' && !standingsLoaded) loadStandings();
+  if (name === 'partidos'   && !partidosLoaded)  loadPartidos();
+}
+
+function loadStandings() {
+  standingsLoaded = true;
+  fetch(`/api/liga-standings/${CONF_KEY}/${LIGA_KEY}`)
+    .then(r => r.text())
+    .then(html => { document.getElementById('standingsContainer').innerHTML = html; })
+    .catch(() => {
+      document.getElementById('standingsContainer').innerHTML =
+        '<p class="no-info-sm">⚠️ No se pudo cargar la tabla. <a href="https://www.espn.com.mx/futbol/" target="_blank" style="color:#c8a415">Ver en ESPN →</a></p>';
+    });
+}
+
+function loadPartidos() {
+  partidosLoaded = true;
+  fetch(`/api/liga-partidos/${CONF_KEY}/${LIGA_KEY}`)
+    .then(r => r.text())
+    .then(html => { document.getElementById('partidosContainer').innerHTML = html; })
+    .catch(() => {
+      document.getElementById('partidosContainer').innerHTML =
+        '<p class="no-info-sm">⚠️ No se pudo cargar los partidos.</p>';
+    });
+}
+
+// Auto-carga posiciones al entrar a la página
+window.addEventListener('DOMContentLoaded', loadStandings);
+</script>
+
+{% endblock %}
