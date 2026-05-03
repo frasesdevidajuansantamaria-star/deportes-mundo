@@ -479,6 +479,57 @@ img { max-width: 100%; display: block; }
 
 .header-search-input::placeholder { color: var(--text-muted); }
 
+/* ── Mercado search big ── */
+.mercado-search-wrap { text-align: center; padding: 20px 0 8px; }
+.mercado-main-search { display: flex; gap: 10px; max-width: 700px; margin: 0 auto; }
+.mercado-search-big { font-size: 1rem; padding: 14px 20px; }
+.mercado-search-hint { color: var(--text-muted); font-size: .8rem; margin-top: 8px; }
+
+/* ── Player result cards (TheSportsDB) ── */
+.player-result-card {
+  display: flex;
+  gap: 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: all .2s;
+  align-items: flex-start;
+}
+.player-result-card:hover {
+  border-color: #c8a415;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(200,164,21,.15);
+}
+.player-result-photo { flex-shrink: 0; }
+.player-result-photo img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+}
+.player-result-nophoto {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text-muted);
+}
+.player-result-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.player-result-name { font-size: 1rem; font-weight: 800; color: var(--text); }
+.player-result-team { font-size: .8rem; color: var(--text-muted); }
+.player-result-pos  { font-size: .75rem; color: var(--accent); font-weight: 700; }
+.player-result-nat  { font-size: .75rem; color: var(--text-muted); }
+.player-result-valor { font-size: .82rem; font-weight: 800; color: #c8a415; background: #1a1500; padding: 2px 8px; border-radius: 4px; width: fit-content; }
+.player-result-desc { font-size: .78rem; color: var(--text-muted); line-height: 1.5; margin-top: 4px; }
+
 /* ── Nav Mercado ── */
 .nav-mercado {
   color: #c8a415 !important;

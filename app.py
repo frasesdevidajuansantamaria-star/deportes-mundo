@@ -235,20 +235,31 @@ def mercado():
         key=lambda x: x[1]['valor_num'], reverse=True
     )[:10]
 
+    sportsdb_results = []
+    local_results = []
+
     if q:
+        # Búsqueda en TheSportsDB (cualquier jugador del mundo)
+        sportsdb_results = search_player_sportsdb(q)
+        # Enriquecer con valores locales si el nombre coincide
+        for p in sportsdb_results:
+            valor_local = MERCADO_VALOR.get(p['name'])
+            p['valor_info'] = valor_local
+        # También buscar en nuestra base local
         ql = q.lower()
-        resultados = [(n, d) for n, d in MERCADO_VALOR.items()
-                      if ql in n.lower() or ql in d.get('equipo', '').lower()]
+        local_results = [(n, d) for n, d in MERCADO_VALOR.items()
+                         if ql in n.lower() or ql in d.get('equipo', '').lower()]
     elif deporte != 'todos':
-        resultados = [(n, d) for n, d in MERCADO_VALOR.items() if d.get('deporte') == deporte]
-        resultados = sorted(resultados, key=lambda x: x[1]['valor_num'], reverse=True)
-    else:
-        resultados = []
+        local_results = sorted(
+            [(n, d) for n, d in MERCADO_VALOR.items() if d.get('deporte') == deporte],
+            key=lambda x: x[1]['valor_num'], reverse=True
+        )
 
     return render_template('mercado.html',
         sports=SPORTS_CONFIG,
         top10=top10,
-        resultados=resultados,
+        sportsdb_results=sportsdb_results,
+        local_results=local_results,
         query=q,
         deporte=deporte,
         mercado=MERCADO_VALOR,
@@ -275,6 +286,50 @@ def jugador(nombre):
         player_news=player_news,
         current_sport=sport_key,
     )
+
+
+def search_player_sportsdb(query):
+    encoded = urllib.parse.quote(query)
+    url = f'https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p={encoded}'
+    cache_key = f'sportsdb_{query.lower()}'
+    with _cache_lock:
+        if cache_key in _cache:
+            ts, data = _cache[cache_key]
+            if time.time() - ts < CACHE_TTL:
+                return data
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'DeportesMundo/1.0'})
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            data = json.loads(resp.read().decode())
+        players = data.get('player') or []
+        results = []
+        for p in players[:15]:
+            sport_raw = (p.get('strSport') or '').lower()
+            if 'soccer' in sport_raw or 'football' in sport_raw:
+                deporte = 'futbol'
+            elif 'basketball' in sport_raw:
+                deporte = 'baloncesto'
+            elif 'tennis' in sport_raw:
+                deporte = 'tenis'
+            elif 'motor' in sport_raw or 'racing' in sport_raw:
+                deporte = 'formula1'
+            else:
+                deporte = 'futbol'
+            results.append({
+                'name': p.get('strPlayer', ''),
+                'team': p.get('strTeam', ''),
+                'position': p.get('strPosition', ''),
+                'nationality': p.get('strNationality', ''),
+                'photo': p.get('strThumb') or p.get('strCutout') or '',
+                'description': (p.get('strDescriptionES') or p.get('strDescriptionEN') or '')[:300],
+                'deporte': deporte,
+                'born': p.get('dateBorn', '')[:4] if p.get('dateBorn') else '',
+            })
+        with _cache_lock:
+            _cache[cache_key] = (time.time(), results)
+        return results
+    except Exception:
+        return []
 
 
 def get_player_news(nombre, limit=6):

@@ -1,38 +1,106 @@
 {% extends "base.html" %}
 {% block title %}Mercado de Jugadores — Valores y Fichajes | DeportesMundo{% endblock %}
-{% block meta_desc %}Los jugadores más valiosos del mundo: fútbol, baloncesto, tenis y Fórmula 1. Valores de mercado actualizados, equipos y posiciones.{% endblock %}
+{% block meta_desc %}Busca cualquier jugador del mundo: valores de mercado, equipo, posición, historial. Fútbol, baloncesto, tenis y Fórmula 1.{% endblock %}
 
 {% block content %}
 
 <section class="hero" style="padding-bottom:20px">
   <h1>💰 Mercado de Jugadores</h1>
-  <p>Valores de mercado · Equipos · Fichajes · Todas las ligas</p>
+  <p>Busca cualquier jugador del mundo · Valores · Equipos · Historial completo</p>
 </section>
+
+<!-- BUSCADOR PRINCIPAL -->
+<div class="mercado-search-wrap">
+  <form action="{{ url_for('mercado') }}" method="get" class="mercado-main-search">
+    <input type="text" name="q" value="{{ query }}"
+           placeholder="🔍 Busca cualquier jugador del mundo: Messi, Mbappé, Quintero, Neymar..."
+           class="search-input mercado-search-big" autofocus>
+    <button type="submit" class="btn btn-search" style="background:#c8a415; color:#000; font-size:1rem; padding:12px 28px">
+      Buscar
+    </button>
+  </form>
+  <p class="mercado-search-hint">Miles de jugadores de fútbol, baloncesto, tenis y más</p>
+</div>
 
 <!-- FILTROS POR DEPORTE -->
 <div class="mercado-filtros">
   {% set deportes = [('futbol','⚽','Fútbol','#00a651'),('baloncesto','🏀','Baloncesto','#e87722'),('tenis','🎾','Tenis','#c8a415'),('formula1','🏎️','Fórmula 1','#e10600')] %}
   {% for key, emoji, name, color in deportes %}
   <a href="{{ url_for('mercado', deporte=key) }}"
-     class="mercado-filtro {% if deporte == key %}active{% endif %}"
+     class="mercado-filtro {% if deporte == key and not query %}active{% endif %}"
      style="--c: {{ color }}">{{ emoji }} {{ name }}</a>
   {% endfor %}
-  <a href="{{ url_for('mercado') }}" class="mercado-filtro {% if deporte == 'todos' and not query %}active{% endif %}" style="--c:#888">Todos</a>
+  <a href="{{ url_for('mercado') }}" class="mercado-filtro {% if deporte == 'todos' and not query %}active{% endif %}" style="--c:#888">⭐ Top 10</a>
 </div>
 
-<!-- BUSCADOR -->
-<div class="section" style="padding-top:20px; padding-bottom:10px; border:none">
-  <form action="{{ url_for('mercado') }}" method="get" class="search-form" style="max-width:500px">
-    <input type="text" name="q" value="{{ query }}" placeholder="Buscar jugador por nombre o equipo..." class="search-input" autofocus>
-    <button type="submit" class="btn btn-search" style="background:#00a651">Buscar</button>
-  </form>
-</div>
+<!-- RESULTADOS DE BÚSQUEDA THESPORTSDB -->
+{% if query %}
+  {% if sportsdb_results %}
+  <section class="section">
+    <h2 class="section-title">🌍 Jugadores encontrados para "{{ query }}"</h2>
+    <p class="section-subtitle">Datos: TheSportsDB · Haz clic en un jugador para ver su perfil completo</p>
+    <div class="grid grid-3" style="margin-top:16px">
+      {% for p in sportsdb_results %}
+      <a href="{{ url_for('jugador', nombre=p.name, deporte=p.deporte) }}" class="player-result-card">
+        <div class="player-result-photo">
+          {% if p.photo %}
+          <img src="{{ p.photo }}" alt="{{ p.name }}" loading="lazy" onerror="this.src='/static/no-player.png'">
+          {% else %}
+          <div class="player-result-nophoto">{{ p.name[0] }}</div>
+          {% endif %}
+        </div>
+        <div class="player-result-info">
+          <strong class="player-result-name">{{ p.name }}</strong>
+          {% if p.team %}<span class="player-result-team">🏟️ {{ p.team }}</span>{% endif %}
+          {% if p.position %}<span class="player-result-pos">{{ p.position }}</span>{% endif %}
+          {% if p.nationality %}<span class="player-result-nat">🌐 {{ p.nationality }}</span>{% endif %}
+          {% if p.born %}<span class="player-result-nat">📅 Nacido: {{ p.born }}</span>{% endif %}
+          {% if p.valor_info %}
+          <span class="player-result-valor">💰 {{ p.valor_info.valor }} · {{ p.valor_info.equipo }}</span>
+          {% endif %}
+          {% if p.description %}
+          <p class="player-result-desc">{{ p.description[:150] }}...</p>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 
-<!-- TOP 10 FÚTBOL -->
-{% if not query and deporte == 'todos' %}
+  {% if local_results and not sportsdb_results %}
+  <section class="section">
+    <h2 class="section-title">🔍 Resultados en nuestra base para "{{ query }}"</h2>
+    <div class="mercado-ranking" style="margin-top:16px">
+      {% for nombre, datos in local_results %}
+      <a href="{{ url_for('jugador', nombre=nombre, deporte=datos.deporte) }}" class="mercado-row">
+        <span class="mercado-pos">{{ loop.index }}</span>
+        <span class="mercado-flag">{{ datos.flag }}</span>
+        <span class="mercado-nombre-rank">{{ nombre }}</span>
+        <span class="mercado-equipo-rank">{{ datos.equipo }}</span>
+        <span class="mercado-pos-rank">{{ datos.posicion }}</span>
+        <span class="mercado-val {% if datos.valor_num >= 150 %}val-top{% elif datos.valor_num >= 80 %}val-high{% else %}val-mid{% endif %}">{{ datos.valor }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if not sportsdb_results and not local_results %}
+  <section class="section">
+    <div style="text-align:center; padding:60px 20px">
+      <p style="font-size:3rem; margin-bottom:16px">😕</p>
+      <p style="font-size:1.1rem; font-weight:700">Sin resultados para "{{ query }}"</p>
+      <p class="no-info">Prueba con el nombre completo o en inglés. Ej: "James Rodriguez", "Falcao"</p>
+    </div>
+  </section>
+  {% endif %}
+
+<!-- TOP 10 FÚTBOL (sin búsqueda) -->
+{% elif deporte == 'todos' %}
 <section class="section">
   <h2 class="section-title" style="--c:#c8a415">🏆 Top 10 Jugadores Más Valiosos — Fútbol Mundial</h2>
-  <p class="section-subtitle">Fuente: Transfermarkt · Valores estimados mayo 2026</p>
+  <p class="section-subtitle">Fuente: Transfermarkt · Estimados mayo 2026 · Haz clic para ver perfil completo</p>
   <div class="mercado-ranking">
     {% for nombre, datos in top10 %}
     <a href="{{ url_for('jugador', nombre=nombre, deporte=datos.deporte) }}" class="mercado-row">
@@ -41,25 +109,20 @@
       <span class="mercado-nombre-rank">{{ nombre }}</span>
       <span class="mercado-equipo-rank">{{ datos.equipo }}</span>
       <span class="mercado-pos-rank">{{ datos.posicion }}</span>
-      <span class="mercado-val {% if datos.valor_num >= 150 %}val-top{% elif datos.valor_num >= 80 %}val-high{% else %}val-mid{% endif %}">
-        {{ datos.valor }}
-      </span>
-      {% if datos.tm %}
-      <span class="mercado-tm-link">📊 TM</span>
-      {% endif %}
+      <span class="mercado-val {% if datos.valor_num >= 150 %}val-top{% elif datos.valor_num >= 80 %}val-high{% else %}val-mid{% endif %}">{{ datos.valor }}</span>
+      {% if datos.tm %}<span class="mercado-tm-link">📊 TM</span>{% endif %}
     </a>
     {% endfor %}
   </div>
   <p class="mercado-fuente">
-    Datos de referencia: <a href="https://www.transfermarkt.es/spieler-statistik/wertvollstespieler/marktwertetop" target="_blank" rel="noopener" style="color:#c8a415">Transfermarkt.es</a>
+    Referencia: <a href="https://www.transfermarkt.co/spieler-statistik/wertvollstespieler/marktwertetop" target="_blank" rel="noopener" style="color:#c8a415">Transfermarkt.co</a>
   </p>
 </section>
 
-<!-- ACCESO RÁPIDO POR DEPORTE -->
 <section class="section">
   <h2 class="section-title">🌍 Explorar por Deporte</h2>
   <div class="grid grid-4" style="margin-top:16px">
-    {% set deportes2 = [('futbol','⚽','Fútbol','#00a651','Los fichajes más caros del mundo'),('baloncesto','🏀','Baloncesto','#e87722','Salarios NBA'),('tenis','🎾','Tenis','#c8a415','Ganancias en el circuito'),('formula1','🏎️','Fórmula 1','#e10600','Contratos de pilotos')] %}
+    {% set deportes2 = [('futbol','⚽','Fútbol','#00a651','Fichajes · Valores · Transferencias'),('baloncesto','🏀','Baloncesto NBA','#e87722','Salarios · Contratos · Estrellas'),('tenis','🎾','Tenis ATP/WTA','#c8a415','Ranking · Ganancias · Circuito'),('formula1','🏎️','Fórmula 1','#e10600','Pilotos · Contratos · Escuderías')] %}
     {% for key, emoji, name, color, desc in deportes2 %}
     <a href="{{ url_for('mercado', deporte=key) }}" class="card" style="--sport-color: {{ color }}; text-align:center; padding:24px 16px">
       <span style="font-size:2.5rem">{{ emoji }}</span>
@@ -69,50 +132,27 @@
     {% endfor %}
   </div>
 </section>
-{% endif %}
 
-<!-- RESULTADOS DE BÚSQUEDA O FILTRO POR DEPORTE -->
-{% if resultados %}
+<!-- FILTRO POR DEPORTE ESPECÍFICO -->
+{% else %}
 <section class="section">
-  {% if query %}
-  <h2 class="section-title">🔍 Resultados para "{{ query }}"</h2>
-  {% else %}
   {% set sport_cfg = sports.get(deporte, {}) %}
   <h2 class="section-title" style="color: {{ sport_cfg.color or '#fff' }}">
-    {{ sport_cfg.emoji or '' }} {{ sport_cfg.name or deporte | capitalize }} — Jugadores y Valores
+    {{ sport_cfg.emoji or '' }} {{ sport_cfg.name or deporte | capitalize }} — Valores y Contratos
   </h2>
-  {% endif %}
   <div class="mercado-ranking" style="margin-top:16px">
-    {% for nombre, datos in resultados %}
+    {% for nombre, datos in local_results %}
     <a href="{{ url_for('jugador', nombre=nombre, deporte=datos.deporte) }}" class="mercado-row">
       <span class="mercado-pos">{{ loop.index }}</span>
       <span class="mercado-flag">{{ datos.flag }}</span>
       <span class="mercado-nombre-rank">{{ nombre }}</span>
       <span class="mercado-equipo-rank">{{ datos.equipo }}</span>
       <span class="mercado-pos-rank">{{ datos.posicion }}</span>
-      <span class="mercado-val {% if datos.valor_num >= 150 %}val-top{% elif datos.valor_num >= 80 %}val-high{% else %}val-mid{% endif %}">
-        {{ datos.valor }}
-      </span>
+      <span class="mercado-val {% if datos.valor_num >= 150 %}val-top{% elif datos.valor_num >= 80 %}val-high{% else %}val-mid{% endif %}">{{ datos.valor }}</span>
     </a>
     {% endfor %}
   </div>
-  {% if not query %}
-  <p class="mercado-fuente">
-    Valores estimados según Transfermarkt, salarios según medios especializados.
-    <a href="https://www.transfermarkt.es" target="_blank" rel="noopener" style="color:#c8a415">Ver fuente completa →</a>
-  </p>
-  {% endif %}
-</section>
-{% elif query %}
-<section class="section">
-  <div style="text-align:center; padding:60px 20px">
-    <p style="font-size:3rem; margin-bottom:16px">🔍</p>
-    <p style="font-size:1.1rem; font-weight:700">Sin resultados para "{{ query }}"</p>
-    <p class="no-info">Prueba con el nombre completo: "Kylian Mbappé", "LeBron James"...</p>
-    <a href="{{ url_for('jugador', nombre=query) }}" class="btn btn-wiki" style="margin-top:16px; display:inline-block">
-      📖 Buscar "{{ query }}" en Wikipedia →
-    </a>
-  </div>
+  <p class="mercado-fuente">Valores estimados según Transfermarkt y medios especializados.</p>
 </section>
 {% endif %}
 
