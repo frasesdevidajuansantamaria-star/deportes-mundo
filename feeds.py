@@ -409,6 +409,90 @@ LATAM_CONFIG = {
     },
 }
 
+# ── Ligas del mundo para el panel flotante ────────────────────────────────────
+# UEFA se define aquí. CONMEBOL y CONCACAF se toman de LATAM_CONFIG en app.py.
+PANEL_FUTBOL_LIGAS = {
+    'uefa': {
+        'name': 'UEFA — Europa',
+        'color': '#003399',
+        'emoji': '🇪🇺',
+        'ligas': {
+            'champions': {
+                'name': 'Champions League',
+                'flag': '⭐',
+                'espn_slug': 'uefa.champions',
+                'feeds': ['https://news.google.com/rss/search?q=champions+league+UEFA+futbol+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'europa-league': {
+                'name': 'Europa League',
+                'flag': '🟠',
+                'espn_slug': 'uefa.europa',
+                'feeds': ['https://news.google.com/rss/search?q=europa+league+UEFA+futbol+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'conference-league': {
+                'name': 'Conference League',
+                'flag': '🔵',
+                'espn_slug': 'uefa.europa.conf',
+                'feeds': ['https://news.google.com/rss/search?q=conference+league+UEFA+futbol&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'laliga': {
+                'name': 'LaLiga',
+                'flag': '🇪🇸',
+                'espn_slug': 'esp.1',
+                'feeds': ['https://news.google.com/rss/search?q=laliga+futbol+españa+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'premier-league': {
+                'name': 'Premier League',
+                'flag': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+                'espn_slug': 'eng.1',
+                'feeds': ['https://news.google.com/rss/search?q=premier+league+futbol+england+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'bundesliga': {
+                'name': 'Bundesliga',
+                'flag': '🇩🇪',
+                'espn_slug': 'ger.1',
+                'feeds': ['https://news.google.com/rss/search?q=bundesliga+alemania+futbol+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'serie-a': {
+                'name': 'Serie A',
+                'flag': '🇮🇹',
+                'espn_slug': 'ita.1',
+                'feeds': ['https://news.google.com/rss/search?q=serie+a+italia+futbol+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'ligue-1': {
+                'name': 'Ligue 1',
+                'flag': '🇫🇷',
+                'espn_slug': 'fra.1',
+                'feeds': ['https://news.google.com/rss/search?q=ligue+1+francia+futbol+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'liga-portugal': {
+                'name': 'Liga Portugal',
+                'flag': '🇵🇹',
+                'espn_slug': 'por.1',
+                'feeds': ['https://news.google.com/rss/search?q=liga+portugal+futbol+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'eredivisie': {
+                'name': 'Eredivisie',
+                'flag': '🇳🇱',
+                'espn_slug': 'ned.1',
+                'feeds': ['https://news.google.com/rss/search?q=eredivisie+holanda+futbol+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'super-lig': {
+                'name': 'Süper Lig',
+                'flag': '🇹🇷',
+                'espn_slug': 'tur.1',
+                'feeds': ['https://news.google.com/rss/search?q=super+lig+turquia+futbol+resultado&hl=es-419&gl=US&ceid=US:es'],
+            },
+            'scottish-premiership': {
+                'name': 'Scottish Premiership',
+                'flag': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+                'espn_slug': 'sco.1',
+                'feeds': ['https://news.google.com/rss/search?q=scottish+premiership+escocia+futbol&hl=es-419&gl=US&ceid=US:es'],
+            },
+        },
+    },
+}
+
 MERCADO_VALOR = {
     # ── FÚTBOL — Top mundial ─────────────────────────────────────────────────
     'Vinicius Junior':   {'valor': '€200M', 'valor_num': 200, 'equipo': 'Real Madrid',      'posicion': 'Extremo',        'deporte': 'futbol',     'flag': '🇧🇷', 'tm': 'vinicius-junior'},

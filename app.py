@@ -6,7 +6,7 @@ import urllib.request
 import urllib.parse
 import feedparser
 from flask import Flask, render_template, redirect, url_for, request, abort
-from feeds import SPORTS_CONFIG, score_article, LATAM_CONFIG, MERCADO_VALOR
+from feeds import SPORTS_CONFIG, score_article, LATAM_CONFIG, MERCADO_VALOR, PANEL_FUTBOL_LIGAS
 from articulos import ARTICULOS, get_articulo
 
 app = Flask(__name__)
@@ -615,6 +615,63 @@ def api_ideas_youtube():
     sport_cfg = SPORTS_CONFIG.get(deporte, {})
     html = render_template('_ideas_panel.html', ideas=ideas, fecha=fecha,
                            deporte=deporte, sport_cfg=sport_cfg)
+    return Response(html, mimetype='text/html')
+
+
+@app.route('/api/panel-ligas')
+def api_panel_ligas():
+    from flask import Response
+    panel_confs = {
+        'uefa': PANEL_FUTBOL_LIGAS['uefa'],
+        'conmebol': {
+            'name': 'CONMEBOL — Sudamérica',
+            'color': LATAM_CONFIG['conmebol']['color'],
+            'emoji': LATAM_CONFIG['conmebol']['emoji'],
+            'ligas': LATAM_CONFIG['conmebol']['ligas'],
+        },
+        'concacaf': {
+            'name': 'CONCACAF — Norteamérica / Centroamérica',
+            'color': LATAM_CONFIG['concacaf']['color'],
+            'emoji': LATAM_CONFIG['concacaf']['emoji'],
+            'ligas': LATAM_CONFIG['concacaf']['ligas'],
+        },
+    }
+    html = render_template('_panel_ligas.html', confs=panel_confs)
+    return Response(html, mimetype='text/html')
+
+
+@app.route('/api/panel-liga-detail')
+def api_panel_liga_detail():
+    from flask import Response
+    conf_key = request.args.get('conf', '')
+    liga_key = request.args.get('liga', '')
+
+    liga = None
+    conf_name = ''
+    conf_color = '#333'
+
+    if conf_key == 'uefa':
+        liga = PANEL_FUTBOL_LIGAS.get('uefa', {}).get('ligas', {}).get(liga_key)
+        conf_name = 'UEFA'
+        conf_color = '#003399'
+    elif conf_key in LATAM_CONFIG:
+        conf_data = LATAM_CONFIG[conf_key]
+        liga = conf_data['ligas'].get(liga_key)
+        conf_name = conf_data['name']
+        conf_color = conf_data['color']
+
+    if not liga:
+        return Response('<p class="no-info-sm" style="padding:20px">Liga no encontrada</p>', mimetype='text/html')
+
+    noticias = get_latam_news(liga, limit=8)
+    slug = liga.get('espn_slug', '')
+    standings = get_espn_standings(slug) if slug else []
+    matches = get_espn_scoreboard(slug) if slug else []
+
+    html = render_template('_panel_liga_detail.html',
+        liga=liga, liga_key=liga_key, conf_key=conf_key,
+        conf_name=conf_name, conf_color=conf_color,
+        noticias=noticias, standings=standings[:12], matches=matches[:8])
     return Response(html, mimetype='text/html')
 
 

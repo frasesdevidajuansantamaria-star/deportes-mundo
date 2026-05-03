@@ -115,12 +115,18 @@ function closeIdeasPanel() {
 }
 
 function mostrarSelector() {
+  const hints = {
+    futbol:     'Ligas del mundo — posiciones y noticias',
+    baloncesto: 'Ideas de todas las ligas',
+    tenis:      'Ideas de todos los torneos',
+    formula1:   'Ideas de todos los circuitos',
+  };
   const btns = DEPORTES_IDEAS.map(d => `
     <button class="ideas-deporte-btn" style="--dc:${d.color}"
             onclick="cargarIdeas('${d.key}')">
       <span class="ideas-deporte-emoji">${d.emoji}</span>
       <span class="ideas-deporte-name">${d.name}</span>
-      <span class="ideas-deporte-hint">Ideas de todas las ligas</span>
+      <span class="ideas-deporte-hint">${hints[d.key] || 'Ideas de hoy'}</span>
     </button>`).join('');
 
   document.getElementById('ideasPanelBody').innerHTML = `
@@ -130,13 +136,51 @@ function mostrarSelector() {
         <p>¿Sobre qué deporte quieres ideas?</p>
       </div>
       <div class="ideas-deportes-grid">${btns}</div>
-      <button class="ideas-todos-btn" onclick="cargarIdeas('todos')">
+      <button class="ideas-todos-btn" onclick="cargarIdeasDirectas('todos')">
         🌍 Ver ideas de todos los deportes
       </button>
     </div>`;
 }
 
 function cargarIdeas(deporte) {
+  if (deporte === 'futbol') {
+    mostrarLigasBrowser();
+    return;
+  }
+  cargarIdeasDirectas(deporte);
+}
+
+function mostrarLigasBrowser() {
+  document.getElementById('ideasPanelBody').innerHTML = `
+    <div class="ideas-loading">
+      <span class="ideas-spinner">⏳</span>
+      <p>Cargando ligas del mundo...</p>
+    </div>`;
+  fetch('/api/panel-ligas')
+    .then(r => r.text())
+    .then(html => { document.getElementById('ideasPanelBody').innerHTML = html; })
+    .catch(() => {
+      document.getElementById('ideasPanelBody').innerHTML =
+        '<div style="text-align:center;padding:40px;color:#888"><p style="font-size:2rem">😕</p><p>Error al cargar. Inténtalo de nuevo.</p><button onclick="mostrarSelector()" style="margin-top:16px;background:#333;border:none;color:#fff;padding:10px 20px;border-radius:8px;cursor:pointer">← Volver</button></div>';
+    });
+}
+
+function verLigaDetalle(conf, liga) {
+  document.getElementById('ideasPanelBody').innerHTML = `
+    <div class="ideas-loading">
+      <span class="ideas-spinner">⏳</span>
+      <p>Cargando información de la liga...</p>
+    </div>`;
+  fetch('/api/panel-liga-detail?conf=' + conf + '&liga=' + liga)
+    .then(r => r.text())
+    .then(html => { document.getElementById('ideasPanelBody').innerHTML = html; })
+    .catch(() => {
+      document.getElementById('ideasPanelBody').innerHTML =
+        '<div style="text-align:center;padding:40px;color:#888"><p style="font-size:2rem">😕</p><p>Error al cargar.</p><button onclick="mostrarLigasBrowser()" style="margin-top:16px;background:#333;border:none;color:#fff;padding:10px 20px;border-radius:8px;cursor:pointer">← Volver</button></div>';
+    });
+}
+
+function cargarIdeasDirectas(deporte) {
   document.getElementById('ideasPanelBody').innerHTML = `
     <div class="ideas-loading">
       <span class="ideas-spinner">⏳</span>

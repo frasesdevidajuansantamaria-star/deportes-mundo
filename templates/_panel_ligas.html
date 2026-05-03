@@ -1,0 +1,27 @@
+<button class="ideas-back-btn" onclick="mostrarSelector()">← Cambiar deporte</button>
+
+<div class="panel-ligas-title">
+  <h3>⚽ Elige tu Liga</h3>
+  <p>Selecciona una liga para ver posiciones, partidos y noticias</p>
+</div>
+
+{% for conf_key, conf in confs.items() %}
+<div class="panel-conf-section">
+  <div class="panel-conf-header" style="color: {{ conf.color }}">
+    {{ conf.emoji }} {{ conf.name }}
+  </div>
+  {% for liga_key, liga in conf.ligas.items() %}
+  <button class="panel-liga-row" onclick="verLigaDetalle('{{ conf_key }}', '{{ liga_key }}')">
+    <span class="panel-liga-flag">{{ liga.flag }}</span>
+    <span class="panel-liga-name">{{ liga.name }}</span>
+    <span class="panel-liga-arrow">›</span>
+  </button>
+  {% endfor %}
+</div>
+{% endfor %}
+
+<div class="panel-ideas-footer">
+  <button class="panel-ideas-btn" onclick="cargarIdeasDirectas('futbol')">
+    💡 Ver solo ideas YouTube de Fútbol
+  </button>
+</div>
