@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Fútbol Mundial — Todas las Ligas | DeportesMundo{% endblock %}
+{% block meta_desc %}Todas las ligas de fútbol del mundo: UEFA (LaLiga, Premier League, Champions), CONMEBOL y CONCACAF. Posiciones, partidos y noticias de cada liga.{% endblock %}
+
+{% block content %}
+
+<section class="latam-hero" style="background: linear-gradient(135deg, #050510 0%, #0a0a20 50%, #00a651 200%)">
+  <div class="latam-hero-inner">
+    <div class="latam-hero-badge" style="background: #00a651; color: #fff">⚽ FÚTBOL MUNDIAL</div>
+    <h1>Todas las Ligas del Mundo</h1>
+    <p>Selecciona una confederación para explorar sus ligas, posiciones, partidos y noticias</p>
+    <div class="latam-hero-stats">
+      <span>🌍 3 confederaciones</span>
+      <span>🏟️ 32 ligas y torneos</span>
+      <span>📰 Noticias en tiempo real</span>
+    </div>
+  </div>
+</section>
+
+<!-- SELECTOR DE CONFEDERACIONES -->
+<section class="section">
+  <div class="conf-selector-grid">
+
+    <!-- UEFA -->
+    {% set uefa = all_confs.uefa.conf %}
+    <a href="{{ url_for('futbol_ligas_uefa') }}" class="conf-selector-card" style="--conf-color: {{ uefa.color }}">
+      <div class="conf-selector-glow"></div>
+      <div class="conf-selector-emoji">{{ uefa.emoji }}</div>
+      <div class="conf-selector-body">
+        <h2 class="conf-selector-name">{{ uefa.name }}</h2>
+        <p class="conf-selector-full">{{ uefa.full_name }}</p>
+        <div class="conf-selector-meta">
+          <span>🌍 {{ uefa.paises }} países</span>
+          <span>🏟️ {{ uefa.ligas | length }} ligas</span>
+          <span>📍 {{ uefa.sede }}</span>
+        </div>
+        <p class="conf-selector-desc">{{ uefa.descripcion }}</p>
+      </div>
+      <div class="conf-selector-ligas">
+        {% for liga_key, liga in uefa.ligas.items() %}
+        <span class="conf-liga-pill">{{ liga.flag }} {{ liga.name.split()[0] }}</span>
+        {% endfor %}
+      </div>
+      <div class="conf-selector-cta">Explorar ligas <span>→</span></div>
+    </a>
+
+    <!-- CONMEBOL -->
+    {% set conmebol = all_confs.conmebol.conf %}
+    <a href="{{ url_for('latam_conf', conf_key='conmebol') }}" class="conf-selector-card" style="--conf-color: {{ conmebol.color }}">
+      <div class="conf-selector-glow"></div>
+      <div class="conf-selector-emoji">{{ conmebol.emoji }}</div>
+      <div class="conf-selector-body">
+        <h2 class="conf-selector-name">{{ conmebol.name }}</h2>
+        <p class="conf-selector-full">{{ conmebol.full_name }}</p>
+        <div class="conf-selector-meta">
+          <span>🌍 {{ conmebol.paises }} países</span>
+          <span>🏟️ {{ conmebol.ligas | length }} ligas</span>
+          <span>📍 {{ conmebol.sede }}</span>
+        </div>
+        <p class="conf-selector-desc">{{ conmebol.descripcion }}</p>
+      </div>
+      <div class="conf-selector-ligas">
+        {% for liga_key, liga in conmebol.ligas.items() %}
+        <span class="conf-liga-pill">{{ liga.flag }} {{ liga.name.split()[0] }}</span>
+        {% endfor %}
+      </div>
+      <div class="conf-selector-cta">Explorar ligas <span>→</span></div>
+    </a>
+
+    <!-- CONCACAF -->
+    {% set concacaf = all_confs.concacaf.conf %}
+    <a href="{{ url_for('latam_conf', conf_key='concacaf') }}" class="conf-selector-card" style="--conf-color: {{ concacaf.color }}">
+      <div class="conf-selector-glow"></div>
+      <div class="conf-selector-emoji">{{ concacaf.emoji }}</div>
+      <div class="conf-selector-body">
+        <h2 class="conf-selector-name">{{ concacaf.name }}</h2>
+        <p class="conf-selector-full">{{ concacaf.full_name }}</p>
+        <div class="conf-selector-meta">
+          <span>🌍 {{ concacaf.paises }} países</span>
+          <span>🏟️ {{ concacaf.ligas | length }} ligas</span>
+          <span>📍 {{ concacaf.sede }}</span>
+        </div>
+        <p class="conf-selector-desc">{{ concacaf.descripcion }}</p>
+      </div>
+      <div class="conf-selector-ligas">
+        {% for liga_key, liga in concacaf.ligas.items() %}
+        <span class="conf-liga-pill">{{ liga.flag }} {{ liga.name.split()[0] }}</span>
+        {% endfor %}
+      </div>
+      <div class="conf-selector-cta">Explorar ligas <span>→</span></div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ACCESO RÁPIDO POR LIGA -->
+<section class="section latam-quick-nav">
+  <h2 class="section-title">🗺️ Acceso Rápido por Liga</h2>
+  <div class="quick-nav-grid" style="grid-template-columns: 1fr 1fr 1fr">
+
+    <div class="quick-nav-group">
+      <div class="quick-nav-conf" style="color: {{ uefa.color }}">{{ uefa.emoji }} {{ uefa.name }}</div>
+      {% for liga_key, liga in uefa.ligas.items() %}
+      <a href="{{ url_for('futbol_liga_uefa', liga_key=liga_key) }}" class="quick-nav-liga">
+        <span class="quick-nav-flag">{{ liga.flag }}</span>
+        <span class="quick-nav-name">{{ liga.name }}</span>
+      </a>
+      {% endfor %}
+    </div>
+
+    <div class="quick-nav-group">
+      <div class="quick-nav-conf" style="color: {{ conmebol.color }}">{{ conmebol.emoji }} {{ conmebol.name }}</div>
+      {% for liga_key, liga in conmebol.ligas.items() %}
+      <a href="{{ url_for('latam_liga', conf_key='conmebol', liga_key=liga_key) }}" class="quick-nav-liga">
+        <span class="quick-nav-flag">{{ liga.flag }}</span>
+        <span class="quick-nav-name">{{ liga.name }}</span>
+      </a>
+      {% endfor %}
+    </div>
+
+    <div class="quick-nav-group">
+      <div class="quick-nav-conf" style="color: {{ concacaf.color }}">{{ concacaf.emoji }} {{ concacaf.name }}</div>
+      {% for liga_key, liga in concacaf.ligas.items() %}
+      <a href="{{ url_for('latam_liga', conf_key='concacaf', liga_key=liga_key) }}" class="quick-nav-liga">
+        <span class="quick-nav-flag">{{ liga.flag }}</span>
+        <span class="quick-nav-name">{{ liga.name }}</span>
+      </a>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

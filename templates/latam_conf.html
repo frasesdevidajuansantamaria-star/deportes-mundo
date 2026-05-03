@@ -6,7 +6,11 @@
 
 <!-- BREADCRUMB -->
 <nav class="latam-breadcrumb">
+  {% if conf_key == 'uefa' %}
+  <a href="{{ url_for('futbol_ligas') }}">⚽ Fútbol Ligas</a>
+  {% else %}
   <a href="{{ url_for('futbol_latam') }}">🌎 LATAM</a>
+  {% endif %}
   <span>›</span>
   <span style="color: {{ conf.color }}">{{ conf.emoji }} {{ conf.name }}</span>
 </nav>
@@ -39,7 +43,7 @@
   <h2 class="section-title">🏟️ Ligas y Torneos de {{ conf.name }}</h2>
   <div class="ligas-grid">
     {% for liga_key, liga in conf.ligas.items() %}
-    <a href="{{ url_for('latam_liga', conf_key=conf_key, liga_key=liga_key) }}" class="liga-card" style="--conf-color: {{ conf.color }}">
+    <a href="{{ url_for('futbol_liga_uefa', liga_key=liga_key) if conf_key == 'uefa' else url_for('latam_liga', conf_key=conf_key, liga_key=liga_key) }}" class="liga-card" style="--conf-color: {{ conf.color }}">
       <div class="liga-card-header">
         <span class="liga-card-flag">{{ liga.flag }}</span>
         <div class="liga-card-title-block">
@@ -76,7 +80,8 @@
   <div class="other-confs-row">
     {% for ck, cf in latam_config.items() %}
     {% if ck != conf_key %}
-    <a href="{{ url_for('latam_conf', conf_key=ck) }}" class="other-conf-card" style="--conf-color: {{ cf.color }}">
+    {% set href = url_for('futbol_ligas_uefa') if ck == 'uefa' else url_for('latam_conf', conf_key=ck) %}
+    <a href="{{ href }}" class="other-conf-card" style="--conf-color: {{ cf.color }}">
       <span class="other-conf-emoji">{{ cf.emoji }}</span>
       <div>
         <strong>{{ cf.name }}</strong>

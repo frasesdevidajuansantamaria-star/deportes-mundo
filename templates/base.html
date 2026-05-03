@@ -30,7 +30,7 @@
     <nav class="main-nav">
       <a href="{{ url_for('index') }}" class="nav-link {% if current_sport is none %}active{% endif %}">INICIO</a>
       {% for key, cfg in sports.items() %}
-      <a href="{{ url_for('sport_page', sport_key=key) }}"
+      <a href="{{ url_for('futbol_ligas') if key == 'futbol' else url_for('sport_page', sport_key=key) }}"
          class="nav-link {% if current_sport == key %}active{% endif %}"
          style="--sport-color: {{ cfg.color }}">
         {{ cfg.emoji }} {{ cfg.name | upper }}
@@ -116,7 +116,7 @@ function closeIdeasPanel() {
 
 function mostrarSelector() {
   const hints = {
-    futbol:     'Ligas del mundo — posiciones y noticias',
+    futbol:     'Ideas de todas las ligas del mundo',
     baloncesto: 'Ideas de todas las ligas',
     tenis:      'Ideas de todos los torneos',
     formula1:   'Ideas de todos los circuitos',
@@ -143,10 +143,6 @@ function mostrarSelector() {
 }
 
 function cargarIdeas(deporte) {
-  if (deporte === 'futbol') {
-    mostrarLigasBrowser();
-    return;
-  }
   cargarIdeasDirectas(deporte);
 }
 

@@ -6,7 +6,7 @@ import urllib.request
 import urllib.parse
 import feedparser
 from flask import Flask, render_template, redirect, url_for, request, abort
-from feeds import SPORTS_CONFIG, score_article, LATAM_CONFIG, MERCADO_VALOR, PANEL_FUTBOL_LIGAS
+from feeds import SPORTS_CONFIG, score_article, LATAM_CONFIG, MERCADO_VALOR, PANEL_FUTBOL_LIGAS, UEFA_CONF
 from articulos import ARTICULOS, get_articulo
 
 app = Flask(__name__)
@@ -280,6 +280,58 @@ def sport_page(sport_key):
         top=top,
         monetizable=monetizable,
         current_sport=sport_key,
+    )
+
+
+@app.route('/futbol-ligas')
+def futbol_ligas():
+    all_confs = {
+        'uefa':     {'conf': UEFA_CONF,                  'url_fn': 'futbol_ligas_uefa'},
+        'conmebol': {'conf': LATAM_CONFIG['conmebol'],   'url_fn': 'latam_conf'},
+        'concacaf': {'conf': LATAM_CONFIG['concacaf'],   'url_fn': 'latam_conf'},
+    }
+    return render_template('futbol_ligas.html',
+        sports=SPORTS_CONFIG,
+        all_confs=all_confs,
+        current_sport='futbol',
+    )
+
+
+@app.route('/futbol-ligas/uefa')
+def futbol_ligas_uefa():
+    return render_template('latam_conf.html',
+        sports=SPORTS_CONFIG,
+        conf=UEFA_CONF,
+        conf_key='uefa',
+        latam_config={'uefa': UEFA_CONF},
+        current_sport='futbol',
+    )
+
+
+@app.route('/futbol-ligas/uefa/<liga_key>')
+def futbol_liga_uefa(liga_key):
+    if liga_key not in UEFA_CONF['ligas']:
+        return redirect(url_for('futbol_ligas_uefa'))
+    liga = UEFA_CONF['ligas'][liga_key]
+    noticias = get_latam_news(liga, limit=20)
+    fichajes_url = liga.get('feeds_fichajes', '')
+    fichajes = []
+    if fichajes_url:
+        for a in _fetch_feed(fichajes_url)[:10]:
+            a['score'] = score_article(a['title'], a.get('summary', ''))
+            fichajes.append(a)
+    otras_ligas = [(k, v) for k, v in UEFA_CONF['ligas'].items() if k != liga_key]
+    return render_template('latam_liga.html',
+        sports=SPORTS_CONFIG,
+        conf=UEFA_CONF,
+        conf_key='uefa',
+        liga=liga,
+        liga_key=liga_key,
+        latam_config={'uefa': UEFA_CONF},
+        noticias=noticias,
+        fichajes=fichajes,
+        otras_ligas=otras_ligas,
+        current_sport='futbol',
     )
 
 

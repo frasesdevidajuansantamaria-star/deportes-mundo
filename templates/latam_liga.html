@@ -8,9 +8,15 @@
 
 <!-- BREADCRUMB -->
 <nav class="latam-breadcrumb">
+  {% if conf_key == 'uefa' %}
+  <a href="{{ url_for('futbol_ligas') }}">⚽ Fútbol Ligas</a>
+  <span>›</span>
+  <a href="{{ url_for('futbol_ligas_uefa') }}" style="color: {{ conf.color }}">{{ conf.emoji }} {{ conf.name }}</a>
+  {% else %}
   <a href="{{ url_for('futbol_latam') }}">🌎 LATAM</a>
   <span>›</span>
   <a href="{{ url_for('latam_conf', conf_key=conf_key) }}" style="color: {{ conf.color }}">{{ conf.emoji }} {{ conf.name }}</a>
+  {% endif %}
   <span>›</span>
   <span>{{ liga.flag }} {{ liga.name }}</span>
 </nav>
