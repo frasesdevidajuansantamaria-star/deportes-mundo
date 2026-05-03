@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{% if query %}Búsqueda: {{ query }}{% else %}Buscar Noticias{% endif %} — DeportesMundo{% endblock %}
+
+{% block content %}
+
+<section class="hero" style="padding-bottom:20px">
+  <h1>🔍 Buscar Noticias</h1>
+  <p>Busca en todas las noticias de fútbol, baloncesto, tenis y Fórmula 1</p>
+  <form action="{{ url_for('buscar') }}" method="get" class="search-form" style="margin: 24px auto 0; max-width:600px">
+    <input type="text" name="q" value="{{ query }}" placeholder="Ej: Mbappé, Champions, transferencia..." class="search-input" autofocus>
+    <button type="submit" class="btn btn-search" style="background: var(--accent)">Buscar</button>
+  </form>
+</section>
+
+{% if query %}
+<section class="section">
+  {% if results %}
+  <h2 class="section-title">
+    {% if results|length == 1 %}1 resultado{% else %}{{ results|length }} resultados{% endif %}
+    para "<span style="color:var(--accent)">{{ query }}</span>"
+  </h2>
+  <div class="grid grid-3" style="margin-top:20px">
+    {% for a in results %}
+    <a href="{{ a.link }}" target="_blank" rel="noopener" class="card card-featured" style="--sport-color: {{ a.sport_color }}">
+      {% if a.image %}<div class="card-img"><img src="{{ a.image }}" alt="{{ a.title }}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>{% endif %}
+      <span class="badge" style="background: {{ a.sport_color }}">{{ a.sport_emoji }} {{ a.sport_name }}</span>
+      {% if a.score >= 3 %}<span class="badge badge-fire">🔥 TRENDING</span>{% endif %}
+      {% if a.score >= 2 %}<span class="badge badge-money">💰 MONETIZABLE</span>{% endif %}
+      <h3>{{ a.title }}</h3>
+      {% if a.summary %}<p class="card-summary">{{ a.summary }}</p>{% endif %}
+      <span class="card-source">{{ a.source }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center; padding:60px 20px">
+    <p style="font-size:3rem; margin-bottom:16px">😕</p>
+    <p style="font-size:1.2rem; font-weight:700; margin-bottom:8px">Sin resultados para "{{ query }}"</p>
+    <p class="no-info">Prueba con otros términos: nombre de jugador, equipo, competición...</p>
+  </div>
+  {% endif %}
+{% else %}
+<section class="section">
+  <h2 class="section-title" style="margin-bottom:24px">Búsquedas sugeridas</h2>
+  <div class="player-pills">
+    {% set sugerencias = ['Messi', 'Mbappé', 'Haaland', 'Champions', 'transferencia', 'NBA', 'Roland Garros', 'Verstappen', 'Copa Libertadores', 'Liga MX'] %}
+    {% for s in sugerencias %}
+    <a href="{{ url_for('buscar', q=s) }}" class="player-pill" style="--c: var(--accent)">{{ s }}</a>
+    {% endfor %}
+  </div>
+{% endif %}
+</section>
+
+{% endblock %}

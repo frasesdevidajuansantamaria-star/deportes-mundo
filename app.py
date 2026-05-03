@@ -16,6 +16,21 @@ _cache_lock = threading.Lock()
 CACHE_TTL = 30 * 60  # 30 minutos
 
 
+def _extract_image(e):
+    if hasattr(e, 'media_thumbnail') and e.media_thumbnail:
+        return e.media_thumbnail[0].get('url', '')
+    if hasattr(e, 'media_content') and e.media_content:
+        for mc in e.media_content:
+            url = mc.get('url', '')
+            if url:
+                return url
+    if hasattr(e, 'enclosures') and e.enclosures:
+        for enc in e.enclosures:
+            if enc.get('type', '').startswith('image') and enc.get('href'):
+                return enc['href']
+    return ''
+
+
 def _fetch_feed(url):
     with _cache_lock:
         if url in _cache:
@@ -37,6 +52,7 @@ def _fetch_feed(url):
                 'link': e.get('link', '#'),
                 'source': source,
                 'published': e.get('published', ''),
+                'image': _extract_image(e),
             })
         with _cache_lock:
             _cache[url] = (time.time(), entries)
@@ -241,6 +257,26 @@ def _content_ideas(name, bio):
     return ideas
 
 
+@app.route('/buscar')
+def buscar():
+    query = request.args.get('q', '').strip()
+    results = []
+    if query:
+        terms = query.lower().split()
+        for sport_key in SPORTS_CONFIG:
+            for a in get_articles(sport_key, limit=30):
+                text = (a['title'] + ' ' + a.get('summary', '')).lower()
+                if all(t in text for t in terms):
+                    results.append(a)
+        results.sort(key=lambda x: x['score'], reverse=True)
+    return render_template('buscar.html',
+        sports=SPORTS_CONFIG,
+        query=query,
+        results=results,
+        current_sport=None,
+    )
+
+
 @app.route('/articulos')
 def articulos():
     return render_template('articulos.html',
@@ -262,6 +298,13 @@ def articulo(slug):
         otros=otros,
         current_sport=None,
     )
+
+
+@app.route('/ads.txt')
+def ads_txt():
+    from flask import Response
+    content = 'google.com, pub-2979871543216728, DIRECT, f08c47fec0942fa0\n'
+    return Response(content, mimetype='text/plain')
 
 
 if __name__ == '__main__':

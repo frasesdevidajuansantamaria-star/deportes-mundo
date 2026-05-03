@@ -19,6 +19,7 @@
   <div class="grid grid-3">
     {% for a in top %}
     <a href="{{ a.link }}" target="_blank" rel="noopener" class="card card-featured" style="--sport-color: {{ config.color }}">
+      {% if a.image %}<div class="card-img"><img src="{{ a.image }}" alt="{{ a.title }}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>{% endif %}
       {% if a.score >= 3 %}<span class="badge badge-fire">🔥 TRENDING</span>{% endif %}
       <h3>{{ a.title }}</h3>
       {% if a.summary %}<p class="card-summary">{{ a.summary }}</p>{% endif %}
@@ -36,6 +37,7 @@
   <div class="grid grid-2">
     {% for a in monetizable %}
     <a href="{{ a.link }}" target="_blank" rel="noopener" class="card card-money">
+      {% if a.image %}<div class="card-img"><img src="{{ a.image }}" alt="{{ a.title }}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>{% endif %}
       <span class="badge badge-money">💰 MONETIZABLE</span>
       <h3>{{ a.title }}</h3>
       {% if a.summary %}<p class="card-summary">{{ a.summary }}</p>{% endif %}

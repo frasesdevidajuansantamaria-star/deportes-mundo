@@ -31,6 +31,10 @@
         📝 ARTÍCULOS
       </a>
     </nav>
+    <form action="{{ url_for('buscar') }}" method="get" class="header-search">
+      <input type="text" name="q" placeholder="🔍 Buscar..." class="header-search-input"
+             {% if request.endpoint == 'buscar' and request.args.get('q') %}value="{{ request.args.get('q') }}"{% endif %}>
+    </form>
     <button class="menu-toggle" onclick="document.querySelector('.main-nav').classList.toggle('open')">☰</button>
   </div>
 </header>
