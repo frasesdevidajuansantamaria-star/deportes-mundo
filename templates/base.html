@@ -69,5 +69,63 @@
   </div>
 </footer>
 
+<!-- BOTÓN FLOTANTE IDEAS YOUTUBE -->
+<button class="fab-ideas" id="fabIdeas" onclick="toggleIdeasPanel()" aria-label="Ideas para YouTube">
+  <span class="fab-icon">💡</span>
+  <span class="fab-text">Ideas YouTube Hoy</span>
+  <span class="fab-pulse"></span>
+</button>
+
+<!-- PANEL DE IDEAS -->
+<div class="ideas-overlay" id="ideasOverlay" onclick="closeIdeasPanel()"></div>
+<div class="ideas-panel" id="ideasPanel">
+  <button class="ideas-close" onclick="closeIdeasPanel()">✕ Cerrar</button>
+  <div class="ideas-panel-body" id="ideasPanelBody">
+    <div class="ideas-loading">
+      <span class="ideas-spinner">⏳</span>
+      <p>Cargando ideas del día...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let ideasLoaded = false;
+
+function toggleIdeasPanel() {
+  const panel = document.getElementById('ideasPanel');
+  const overlay = document.getElementById('ideasOverlay');
+  const isOpen = panel.classList.contains('open');
+  if (isOpen) {
+    closeIdeasPanel();
+  } else {
+    panel.classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (!ideasLoaded) loadIdeas();
+  }
+}
+
+function closeIdeasPanel() {
+  document.getElementById('ideasPanel').classList.remove('open');
+  document.getElementById('ideasOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function loadIdeas() {
+  fetch('/api/ideas-youtube')
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById('ideasPanelBody').innerHTML = html;
+      ideasLoaded = true;
+    })
+    .catch(() => {
+      document.getElementById('ideasPanelBody').innerHTML =
+        '<p style="color:#888;text-align:center;padding:40px">Error cargando ideas. Inténtalo de nuevo.</p>';
+    });
+}
+
+// Cerrar con Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeIdeasPanel(); });
+</script>
 </body>
 </html>

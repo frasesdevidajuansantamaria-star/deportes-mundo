@@ -407,6 +407,50 @@ def articulo(slug):
     )
 
 
+@app.route('/api/ideas-youtube')
+def api_ideas_youtube():
+    from flask import Response
+    import datetime
+    ideas = []
+    formatos = [
+        ('🔥', 'TRENDING', lambda t: t),
+        ('😱', 'SHOCK',    lambda t: f'¿Es cierto esto? {t}'),
+        ('💣', 'BOMBA',    lambda t: f'EXCLUSIVA: {t}'),
+        ('🤯', 'VIRAL',    lambda t: f'Nadie lo vio venir: {t}'),
+        ('📢', 'HOT',      lambda t: f'Lo que no te contaron: {t}'),
+        ('⚡', 'AHORA',    lambda t: f'URGENTE: {t}'),
+    ]
+    seen = set()
+    fi = 0
+    for sport_key in SPORTS_CONFIG:
+        for a in get_articles(sport_key, limit=30):
+            if a['score'] >= 1:
+                titulo = a['title'].split(' - ')[0].split(' | ')[0].strip()
+                if len(titulo) > 20 and titulo not in seen:
+                    seen.add(titulo)
+                    emoji, tag, fn = formatos[fi % len(formatos)]
+                    ideas.append({
+                        'emoji': emoji,
+                        'tag': tag,
+                        'titulo': fn(titulo),
+                        'original': titulo,
+                        'sport_emoji': a['sport_emoji'],
+                        'sport_name': a['sport_name'],
+                        'sport_color': a['sport_color'],
+                        'score': a['score'],
+                        'link': a['link'],
+                    })
+                    fi += 1
+                if len(ideas) >= 20:
+                    break
+        if len(ideas) >= 20:
+            break
+    ideas.sort(key=lambda x: x['score'], reverse=True)
+    fecha = datetime.datetime.now().strftime('%d/%m/%Y')
+    html = render_template('_ideas_panel.html', ideas=ideas, fecha=fecha)
+    return Response(html, mimetype='text/html')
+
+
 @app.route('/ads.txt')
 def ads_txt():
     from flask import Response
